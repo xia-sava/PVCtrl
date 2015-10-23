@@ -95,7 +95,6 @@ namespace PVCtrl
         {
             if (PvCtrlUtil.CheckPVExists())
             {
-                Automation.RemoveAllEventHandlers();
                 Automation.AddAutomationEventHandler(
                     WindowPattern.WindowOpenedEvent,
                     AutomationElement.FromHandle(PvCtrlUtil.GetPVProcess().MainWindowHandle),
@@ -118,6 +117,7 @@ namespace PVCtrl
                         //var submitButton = PvCtrlUtil.getAutomationElement(element, TreeScope.Children, ControlType.Button, "開く(O)");
                         var submitButton = PvCtrlUtil.getAutomationElement(element, TreeScope.Children, ControlType.Button, "保存(S)");
                         (submitButton.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern).Invoke();
+                        Automation.RemoveAllEventHandlers();
                     });
             }
         }
