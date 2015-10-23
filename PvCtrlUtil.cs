@@ -67,10 +67,10 @@ namespace PVCtrl
                     {
                         var menuPattern = menuItem.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
                         menuPattern.Expand();
-                        do
+                        while (menuPattern.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
                         {
                             Thread.Sleep(100);
-                        } while (menuPattern.Current.ExpandCollapseState == ExpandCollapseState.Collapsed);
+                        }
                     }
                     current = menuItem;
                 }
@@ -95,6 +95,7 @@ namespace PVCtrl
         {
             if (PvCtrlUtil.CheckPVExists())
             {
+                Automation.RemoveAllEventHandlers();
                 Automation.AddAutomationEventHandler(
                     WindowPattern.WindowOpenedEvent,
                     AutomationElement.FromHandle(PvCtrlUtil.GetPVProcess().MainWindowHandle),
@@ -105,9 +106,14 @@ namespace PVCtrl
                         if (element.Current.Name != "名前を付けて保存") return;
                         //if (element.Current.Name != "開く") return;
 
-                        var filenameBox = PvCtrlUtil.getAutomationElement(element, TreeScope.Descendants, ControlType.ComboBox, "ファイル名:");
-                        (filenameBox.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern).SetValue(filename);
-                        Thread.Sleep(100);
+                        var filenameBox = PvCtrlUtil.getAutomationElement(element, TreeScope.Descendants, ControlType.Edit, "ファイル名:");
+                        var filenameBoxValuePattern = filenameBox.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern;
+                        filenameBoxValuePattern.SetValue(filename);
+                        while (filenameBoxValuePattern.Current.Value != filename)
+                        {
+                            Debug.WriteLine(filenameBoxValuePattern.Current.Value);
+                            Thread.Sleep(100);
+                        }
 
                         //var submitButton = PvCtrlUtil.getAutomationElement(element, TreeScope.Children, ControlType.Button, "開く(O)");
                         var submitButton = PvCtrlUtil.getAutomationElement(element, TreeScope.Children, ControlType.Button, "保存(S)");

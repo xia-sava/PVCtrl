@@ -19,12 +19,12 @@ namespace PVCtrl
         }
 
 
-        private bool InvokePVMenu(string[] menuItems)
+        private bool InvokePVMenu(string[] menuItems, string message = "")
         {
             try
             {
                 PvCtrlUtil.ControlMenu(menuItems);
-                this.ClearMessage();
+                this.ShowMessage(message);
                 return true;
             }
             catch
@@ -34,15 +34,21 @@ namespace PVCtrl
             }
         }
 
-        private void ClearMessage()
+        private void SetMessage(string message)
         {
-            this.MessageLabel.Text = "";
+            this.MessageTextBox.Text = String.Format($"{DateTime.Now.ToString("hh:mm:ss")} {message}\r\n{this.MessageTextBox.Text}");
+        }
+
+        private void ShowMessage(string message)
+        {
+            System.Media.SystemSounds.Hand.Play();
+            this.SetMessage(message);
         }
 
         private void ErrorMessage(string message = "何らかエラーが発生したっぽい？")
         {
             System.Media.SystemSounds.Beep.Play();
-            this.MessageLabel.Text = message;
+            this.SetMessage("Error: " + message);
         }
 
 
@@ -62,13 +68,14 @@ namespace PVCtrl
 
             PvCtrlUtil.setSubmitSaveAsDialog(filename);
 
-            this.InvokePVMenu(new[] { "ファイル", "録画..." });
+            this.InvokePVMenu(new[] { "ファイル", "録画..." }, $"ファイル名「{filename}」で録画開始しました．");
             //this.InvokePVMenu(new[] { "ファイル", "開く", "ファイル..." });
         }
 
         private void StopButton_Click(object sender, EventArgs e)
         {
-            this.InvokePVMenu(new[] { "ファイル", "録画停止" });
+            this.InvokePVMenu(new[] { "ファイル", "録画停止" }, "録画停止しました．");
+            this.StopReserveCheckBox.Checked = false;
         }
 
         private void Min30Button_Click(object sender, EventArgs e)
@@ -100,7 +107,6 @@ namespace PVCtrl
         {
             if ((sender as CheckBox).Checked)
             {
-                this.ClearMessage();
                 PvCtrlUtil.StartRecTimer(
                     (int)this.MinUpDown.Value,
                     (int)this.AlarmUpDown.Value,
@@ -118,15 +124,16 @@ namespace PVCtrl
                             this.StopReserveCheckBox.Checked = false;
                             if (PVRecStop)
                             {
-                                this.InvokePVMenu(new[] { "ファイル", "録画停止" });
+                                this.InvokePVMenu(new[] { "ファイル", "録画停止" }, "予約により録画停止しました．");
                             }
                         }));
                     });
+                this.ShowMessage($"録画停止予約を{this.MinUpDown.Value}分後に設定しました．");
             }
             else
             {
                 PvCtrlUtil.StopRecTimer(false);
-                this.ClearMessage();
+                this.ShowMessage("録画停止予約を解除しました．");
             }
         }
 
@@ -137,17 +144,25 @@ namespace PVCtrl
 
         private void LineAButton_Click(object sender, EventArgs e)
         {
-            this.InvokePVMenu(new[] { "設定", "映像・音声入力端子", "A" });
+            this.InvokePVMenu(new[] { "設定", "映像・音声入力端子", "A" }, "入力端子 A に切り替えました．");
         }
 
         private void LineBButton_Click(object sender, EventArgs e)
         {
-            this.InvokePVMenu(new[] { "設定", "映像・音声入力端子", "B" });
+            this.InvokePVMenu(new[] { "設定", "映像・音声入力端子", "B", "入力端子 B に切り替えました．" });
         }
 
         private void SoundOnButton_Click(object sender, EventArgs e)
         {
-            this.InvokePVMenu(new[] { "設定", "モニタ時に音声を出力" });
+            this.InvokePVMenu(new[] { "設定", "モニタ時に音声を出力", "音声 on/off を切り替えました．" });
+        }
+
+        private void PvCtrl_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.StopReserveCheckBox.Checked)
+            {
+                PvCtrlUtil.StopRecTimer(false);
+            }
         }
     }
 }

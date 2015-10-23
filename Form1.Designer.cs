@@ -57,10 +57,10 @@
             this.StopReserveCheckBox = new System.Windows.Forms.CheckBox();
             this.StopTimeCaptionLabel = new System.Windows.Forms.Label();
             this.RemainedTimeCaptionLabel = new System.Windows.Forms.Label();
-            this.MessageLabel = new System.Windows.Forms.Label();
             this.StopTimeLabel = new System.Windows.Forms.Label();
             this.RemainedTimeLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.MessageTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AlarmUpDown)).BeginInit();
@@ -397,18 +397,6 @@
             this.RemainedTimeCaptionLabel.TabIndex = 0;
             this.RemainedTimeCaptionLabel.Text = "録画停止まで";
             // 
-            // MessageLabel
-            // 
-            this.MessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.MessageLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.MessageLabel.ForeColor = System.Drawing.Color.Red;
-            this.MessageLabel.Location = new System.Drawing.Point(12, 197);
-            this.MessageLabel.Name = "MessageLabel";
-            this.MessageLabel.Size = new System.Drawing.Size(1182, 101);
-            this.MessageLabel.TabIndex = 10;
-            // 
             // StopTimeLabel
             // 
             this.StopTimeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -445,13 +433,23 @@
             this.flowLayoutPanel2.Size = new System.Drawing.Size(301, 110);
             this.flowLayoutPanel2.TabIndex = 11;
             // 
+            // MessageTextBox
+            // 
+            this.MessageTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.MessageTextBox.Location = new System.Drawing.Point(12, 187);
+            this.MessageTextBox.Multiline = true;
+            this.MessageTextBox.Name = "MessageTextBox";
+            this.MessageTextBox.ReadOnly = true;
+            this.MessageTextBox.Size = new System.Drawing.Size(1182, 108);
+            this.MessageTextBox.TabIndex = 12;
+            // 
             // PvCtrl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1206, 307);
+            this.Controls.Add(this.MessageTextBox);
             this.Controls.Add(this.flowLayoutPanel2);
-            this.Controls.Add(this.MessageLabel);
             this.Controls.Add(this.flowLayoutPanel7);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.flowLayoutPanel10);
@@ -460,6 +458,7 @@
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "PvCtrl";
             this.Text = "PvCtrl";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PvCtrl_FormClosing);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel7.ResumeLayout(false);
@@ -471,6 +470,7 @@
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -499,7 +499,6 @@
         private System.Windows.Forms.CheckBox StopReserveCheckBox;
         private System.Windows.Forms.Label StopTimeCaptionLabel;
         private System.Windows.Forms.Label RemainedTimeCaptionLabel;
-        private System.Windows.Forms.Label MessageLabel;
         private System.Windows.Forms.Label StopTimeLabel;
         private System.Windows.Forms.Label RemainedTimeLabel;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
@@ -507,6 +506,7 @@
         private System.Windows.Forms.Label AlarmCaptionLabel;
         private System.Windows.Forms.NumericUpDown AlarmUpDown;
         private System.Windows.Forms.Label AlarmCaption2Label;
+        private System.Windows.Forms.TextBox MessageTextBox;
     }
 }
 
