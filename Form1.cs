@@ -149,12 +149,12 @@ namespace PVCtrl
 
         private void LineBButton_Click(object sender, EventArgs e)
         {
-            this.InvokePVMenu(new[] { "設定", "映像・音声入力端子", "B", "入力端子 B に切り替えました．" });
+            this.InvokePVMenu(new[] { "設定", "映像・音声入力端子", "B" }, "入力端子 B に切り替えました．");
         }
 
         private void SoundOnButton_Click(object sender, EventArgs e)
         {
-            this.InvokePVMenu(new[] { "設定", "モニタ時に音声を出力", "音声 on/off を切り替えました．" });
+            this.InvokePVMenu(new[] { "設定", "モニタ時に音声を出力" }, "音声 on/off を切り替えました．");
         }
 
         private void PvCtrl_FormClosing(object sender, FormClosingEventArgs e)
