@@ -17,6 +17,7 @@ namespace PVCtrl
         {
             InitializeComponent();
             this.AlarmUpDown.Increment = 1m / SystemInformation.MouseWheelScrollLines;
+            this.MinUpDown.Increment = 1m / SystemInformation.MouseWheelScrollLines;
         }
 
 
