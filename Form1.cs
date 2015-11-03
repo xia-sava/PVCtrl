@@ -109,9 +109,11 @@ namespace PVCtrl
         {
             if ((sender as CheckBox).Checked)
             {
+                var minupdown = Math.Round(this.MinUpDown.Value);
+                var alarmupdown = Math.Round(this.AlarmUpDown.Value);
                 PvCtrlUtil.StartRecTimer(
-                    (int)this.MinUpDown.Value,
-                    (int)this.AlarmUpDown.Value,
+                    (int)minupdown,
+                    (int)alarmupdown,
                     (DateTime stopTime) =>
                     {
                         Invoke((MethodInvoker)(() => this.StopTimeLabel.Text = stopTime.ToString("HH:mm:ss")));
@@ -130,7 +132,7 @@ namespace PVCtrl
                             }
                         }));
                     });
-                this.ShowMessage($"録画停止予約を{this.MinUpDown.Value}分後に設定しました．");
+                this.ShowMessage($"録画停止予約を{minupdown}分後に設定しました．");
             }
             else
             {
