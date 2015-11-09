@@ -124,6 +124,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PvCtrlUtil.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="WheelableNumericUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WheelableNumericUpDown.Designer.cs">
+      <DependentUpon>WheelableNumericUpDown.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

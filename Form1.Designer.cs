@@ -44,7 +44,7 @@
             this.SoundCaptionLabel = new System.Windows.Forms.Label();
             this.SoundOnButton = new System.Windows.Forms.Button();
             this.AlarmCaptionLabel = new System.Windows.Forms.Label();
-            this.AlarmUpDown = new System.Windows.Forms.NumericUpDown();
+            this.AlarmUpDown = new PVCtrl.WheelableNumericUpDown();
             this.AlarmCaption2Label = new System.Windows.Forms.Label();
             this.flowLayoutPanel10 = new System.Windows.Forms.FlowLayoutPanel();
             this.Min30Button = new System.Windows.Forms.Button();
@@ -52,7 +52,7 @@
             this.Min90Button = new System.Windows.Forms.Button();
             this.Min120Button = new System.Windows.Forms.Button();
             this.Min180Button = new System.Windows.Forms.Button();
-            this.MinUpDown = new System.Windows.Forms.NumericUpDown();
+            this.MinUpDown = new PVCtrl.WheelableNumericUpDown();
             this.StopReserveMinLabel = new System.Windows.Forms.Label();
             this.StopReserveCheckBox = new System.Windows.Forms.CheckBox();
             this.StopTimeCaptionLabel = new System.Windows.Forms.Label();
@@ -248,6 +248,7 @@
             this.AlarmUpDown.Name = "AlarmUpDown";
             this.AlarmUpDown.Size = new System.Drawing.Size(100, 46);
             this.AlarmUpDown.TabIndex = 10;
+            this.AlarmUpDown.Tag = 2;
             this.AlarmUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.AlarmUpDown.Value = new decimal(new int[] {
             2,
@@ -346,6 +347,7 @@
             this.MinUpDown.Name = "MinUpDown";
             this.MinUpDown.Size = new System.Drawing.Size(100, 46);
             this.MinUpDown.TabIndex = 10;
+            this.MinUpDown.Tag = 30;
             this.MinUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.MinUpDown.Value = new decimal(new int[] {
             30,
@@ -494,7 +496,7 @@
         private System.Windows.Forms.Button Min60Button;
         private System.Windows.Forms.Button Min90Button;
         private System.Windows.Forms.Button Min120Button;
-        private System.Windows.Forms.NumericUpDown MinUpDown;
+        private WheelableNumericUpDown MinUpDown;
         private System.Windows.Forms.Label StopReserveMinLabel;
         private System.Windows.Forms.CheckBox StopReserveCheckBox;
         private System.Windows.Forms.Label StopTimeCaptionLabel;
@@ -504,7 +506,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Button Min180Button;
         private System.Windows.Forms.Label AlarmCaptionLabel;
-        private System.Windows.Forms.NumericUpDown AlarmUpDown;
+        private WheelableNumericUpDown AlarmUpDown;
         private System.Windows.Forms.Label AlarmCaption2Label;
         private System.Windows.Forms.TextBox MessageTextBox;
     }
