@@ -116,6 +116,7 @@ namespace PVCtrl
                     {
                         Invoke((MethodInvoker)(() => this.StopTimeLabel.Text = stopTime.ToString("HH:mm:ss")));
                         Invoke((MethodInvoker)(() => this.RemainedTimeLabel.Text = (stopTime - DateTime.Now).ToString(@"hh\:mm\:ss")));
+                        Invoke((MethodInvoker)(() => this.Text = "PvCtrl - 録画停止予約 " + (stopTime - DateTime.Now).ToString(@"hh\:mm\:ss")));
                     },
                     (bool PVRecStop) =>
                     {
@@ -127,6 +128,7 @@ namespace PVCtrl
                             if (PVRecStop)
                             {
                                 this.InvokePVMenu(new[] { "ファイル", "録画停止" }, "予約により録画停止しました．");
+                                Invoke((MethodInvoker)(() => this.Text = "PvCtrl"));
                             }
                         }));
                     });
@@ -136,6 +138,7 @@ namespace PVCtrl
             {
                 PvCtrlUtil.StopRecTimer(false);
                 this.ShowMessage("録画停止予約を解除しました．");
+                this.Text = "PvCtrl";
             }
         }
 
