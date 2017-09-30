@@ -55,7 +55,35 @@ namespace PVCtrl
         private void FilenamePasteButton_Click(object sender, EventArgs e)
         {
             this.FilenameTextBox.Text = Clipboard.GetText();
+            this.NormalizeFilenameTextBox();
         }
+
+
+        private void FilenameTextBox_Leave(object sender, EventArgs e)
+        {
+            this.NormalizeFilenameTextBox();
+        }
+
+        private void NormalizeFilenameTextBox()
+        {
+            this.FilenameTextBox.Text = this.FilenameTextBox.Text
+                .Trim()
+                .Replace('\\', '￥')
+                .Replace('/', '／')
+                .Replace(':', '：')
+                .Replace('?', '？')
+                .Replace('*', '＊')
+                .Replace('"', '”')
+                .Replace('\'', '’')
+                .Replace('<', '＜')
+                .Replace('>', '＞')
+                .Replace('|', '｜')
+                .Replace('　', ' ')
+                .Replace("\n", "")
+                .Replace("\r", "")
+            ;
+        }
+
 
         private void RecButton_Click(object sender, EventArgs e)
         {

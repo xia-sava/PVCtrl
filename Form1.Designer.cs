@@ -90,20 +90,21 @@
             this.FilenameCaptionLabel.AutoSize = true;
             this.FilenameCaptionLabel.Location = new System.Drawing.Point(3, 10);
             this.FilenameCaptionLabel.Name = "FilenameCaptionLabel";
-            this.FilenameCaptionLabel.Size = new System.Drawing.Size(181, 31);
+            this.FilenameCaptionLabel.Size = new System.Drawing.Size(182, 31);
             this.FilenameCaptionLabel.TabIndex = 0;
             this.FilenameCaptionLabel.Text = "録画ファイル名";
             // 
             // FilenameTextBox
             // 
-            this.FilenameTextBox.Location = new System.Drawing.Point(190, 3);
+            this.FilenameTextBox.Location = new System.Drawing.Point(191, 3);
             this.FilenameTextBox.Name = "FilenameTextBox";
             this.FilenameTextBox.Size = new System.Drawing.Size(659, 46);
             this.FilenameTextBox.TabIndex = 1;
+            this.FilenameTextBox.Leave += new System.EventHandler(this.FilenameTextBox_Leave);
             // 
             // FilenamePasteButton
             // 
-            this.FilenamePasteButton.Location = new System.Drawing.Point(855, 3);
+            this.FilenamePasteButton.Location = new System.Drawing.Point(856, 3);
             this.FilenamePasteButton.Name = "FilenamePasteButton";
             this.FilenamePasteButton.Size = new System.Drawing.Size(100, 46);
             this.FilenamePasteButton.TabIndex = 2;
@@ -115,7 +116,7 @@
             // 
             this.Filler1Label.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.Filler1Label.AutoSize = true;
-            this.Filler1Label.Location = new System.Drawing.Point(961, 10);
+            this.Filler1Label.Location = new System.Drawing.Point(962, 10);
             this.Filler1Label.Name = "Filler1Label";
             this.Filler1Label.Size = new System.Drawing.Size(21, 31);
             this.Filler1Label.TabIndex = 0;
@@ -124,7 +125,7 @@
             // RecButton
             // 
             this.RecButton.ForeColor = System.Drawing.Color.Red;
-            this.RecButton.Location = new System.Drawing.Point(988, 3);
+            this.RecButton.Location = new System.Drawing.Point(989, 3);
             this.RecButton.Name = "RecButton";
             this.RecButton.Size = new System.Drawing.Size(46, 46);
             this.RecButton.TabIndex = 3;
@@ -136,7 +137,7 @@
             // StopButton
             // 
             this.StopButton.ForeColor = System.Drawing.Color.Blue;
-            this.StopButton.Location = new System.Drawing.Point(1040, 3);
+            this.StopButton.Location = new System.Drawing.Point(1041, 3);
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(46, 46);
             this.StopButton.TabIndex = 4;
@@ -233,13 +234,13 @@
             this.AlarmCaptionLabel.AutoSize = true;
             this.AlarmCaptionLabel.Location = new System.Drawing.Point(533, 10);
             this.AlarmCaptionLabel.Name = "AlarmCaptionLabel";
-            this.AlarmCaptionLabel.Size = new System.Drawing.Size(116, 31);
+            this.AlarmCaptionLabel.Size = new System.Drawing.Size(117, 31);
             this.AlarmCaptionLabel.TabIndex = 0;
             this.AlarmCaptionLabel.Text = " アラーム";
             // 
             // AlarmUpDown
             // 
-            this.AlarmUpDown.Location = new System.Drawing.Point(655, 3);
+            this.AlarmUpDown.Location = new System.Drawing.Point(656, 3);
             this.AlarmUpDown.Maximum = new decimal(new int[] {
             1440,
             0,
@@ -260,7 +261,7 @@
             // 
             this.AlarmCaption2Label.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.AlarmCaption2Label.AutoSize = true;
-            this.AlarmCaption2Label.Location = new System.Drawing.Point(761, 10);
+            this.AlarmCaption2Label.Location = new System.Drawing.Point(762, 10);
             this.AlarmCaption2Label.Name = "AlarmCaption2Label";
             this.AlarmCaption2Label.Size = new System.Drawing.Size(62, 31);
             this.AlarmCaption2Label.TabIndex = 0;
