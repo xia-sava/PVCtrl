@@ -18,7 +18,6 @@ namespace PVCtrl
             InitializeComponent();
         }
 
-
         private bool InvokePVMenu(string[] menuItems, string message = "")
         {
             try
@@ -190,12 +189,29 @@ namespace PVCtrl
             this.InvokePVMenu(new[] { "設定", "モニタ時に音声を出力" }, "音声 on/off を切り替えました．");
         }
 
+        private void PvCtrl_Load(object sender, EventArgs e)
+        {
+            // ウィンドウの位置・サイズを復元
+            Bounds = Properties.Settings.Default.Bounds;
+            WindowState = Properties.Settings.Default.WindowState;
+        }
+
         private void PvCtrl_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (this.StopReserveCheckBox.Checked)
             {
                 PvCtrlUtil.StopRecTimer(false);
             }
+
+            // ウィンドウの位置・サイズを保存
+            if (WindowState == FormWindowState.Normal)
+                Properties.Settings.Default.Bounds = Bounds;
+            else
+                Properties.Settings.Default.Bounds = RestoreBounds;
+
+            Properties.Settings.Default.WindowState = WindowState;
+
+            Properties.Settings.Default.Save();
         }
     }
 }
