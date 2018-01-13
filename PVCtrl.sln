@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVCtrl", "PVCtrl\PVCtrl.csproj", "{C11E5012-75B9-4C96-861A-02BB4F3EDE41}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Remote|Any CPU = Remote|Any CPU
+		Remote|x64 = Remote|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Debug|x64.ActiveCfg = Debug|x64
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Debug|x64.Build.0 = Debug|x64
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Release|x64.ActiveCfg = Release|x64
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Release|x64.Build.0 = Release|x64
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|Any CPU.ActiveCfg = Remote|Any CPU
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|Any CPU.Build.0 = Remote|Any CPU
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|x64.ActiveCfg = Remote|x64
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|x64.Build.0 = Remote|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
