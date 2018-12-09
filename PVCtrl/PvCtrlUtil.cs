@@ -53,7 +53,7 @@ namespace PVCtrl
             var PVProcess = PvCtrlUtil.GetPVProcess();
             if (PVProcess != null)
             {
-                var retry = 100;
+                var retry = 10;
                 while (retry-- > 0)
                 {
                     try
