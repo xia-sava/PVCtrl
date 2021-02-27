@@ -7,6 +7,7 @@ using SendKeys = System.Windows.Forms.SendKeys;
 using Thread = System.Threading.Thread;
 using System.Timers;
 using System.Media;
+using System.Threading.Tasks;
 
 namespace PVCtrl
 {
@@ -41,7 +42,15 @@ namespace PVCtrl
 
                 if (File.Exists(filename))
                 {
-                    Process.Start(filename);
+                    Task.Run(async () =>
+                    {
+                        var proc = Process.Start(filename);
+                        if (proc != null)
+                        {
+                            await Task.Delay(3000);
+                            proc.PriorityClass = ProcessPriorityClass.High;
+                        }
+                    });
                     return;
                 }
             }
