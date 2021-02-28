@@ -1,28 +1,31 @@
 ﻿using System;
-using System.Linq;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Automation;
-using SendKeys = System.Windows.Forms.SendKeys;
-using Thread = System.Threading.Thread;
-using System.Timers;
+using System.Linq;
 using System.Media;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Automation;
+using System.Windows.Forms;
+using PVCtrl.Properties;
+using Timer = System.Timers.Timer;
 
 namespace PVCtrl
 {
-    class PvCtrlUtil
+    static class PvCtrlUtil
     {
-        static Timer recTimer;
-        static Action<bool> stopHandler;
+        private static Timer _recTimer;
+        private static Action<bool> _recStopHandler;
 
-        static public bool CheckPVExists()
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static bool CheckPvExists()
         {
-            return (PvCtrlUtil.GetPVProcess() != null);
+            return (GetPvProcess() != null);
         }
 
 
-        static public Process GetPVProcess()
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static Process GetPvProcess()
         {
             foreach (Process p in Process.GetProcesses())
             {
@@ -35,7 +38,7 @@ namespace PVCtrl
         }
 
 
-        static public void InvokePV()
+        public static void InvokePv()
         {
             foreach (var filename in new[] { @"C:\Program Files\EARTH SOFT\PV\PV.exe", @"C:\Program Files (x86)\EARTH SOFT\PV\PV.exe" })
             {
@@ -57,37 +60,38 @@ namespace PVCtrl
         }
 
 
-        static public bool ControlMenu(string[] menuItems)
+        // ReSharper disable once UnusedMethodReturnValue.Global
+        public static bool ControlMenu(string[] menuItems)
         {
-            var PVProcess = PvCtrlUtil.GetPVProcess();
-            if (PVProcess != null)
+            var pvProcess = GetPvProcess();
+            if (pvProcess != null)
             {
                 var retry = 10;
                 while (retry-- > 0)
                 {
                     try
                     {
-                        var pv = AutomationElement.FromHandle(PVProcess.MainWindowHandle);
-                        var menubar = PvCtrlUtil.getAutomationElement(pv, TreeScope.Children, ControlType.MenuBar, "アプリケーション");
+                        var pv = AutomationElement.FromHandle(pvProcess.MainWindowHandle);
+                        var menubar = GetAutomationElement(pv, TreeScope.Children, ControlType.MenuBar, "アプリケーション");
                         Thread.Sleep(100);
 
                         var current = menubar;
                         foreach (var name in menuItems.Take(menuItems.Count() - 1))
                         {
-                            var menuItem = PvCtrlUtil.getAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem, name);
+                            var menuItem = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem, name);
                             var menuPattern = menuItem.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
-                            menuPattern.Expand();
-                            while (menuPattern.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
+                            menuPattern?.Expand();
+                            while (menuPattern?.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
                             {
                                 Thread.Sleep(100);
                             }
                             current = menuItem;
                         }
-                        var command = PvCtrlUtil.getAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem, menuItems.Last());
+                        var command = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem, menuItems.Last());
                         if (command.Current.IsEnabled)
                         {
                             var commandPattern = command.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
-                            commandPattern.Invoke();
+                            commandPattern?.Invoke();
 
                         }
 
@@ -103,38 +107,33 @@ namespace PVCtrl
             return false;
         }
 
-        static public void setSubmitSaveAsDialog(string filename)
+        public static void SetSubmitSaveAsDialog(string filename)
         {
-            if (PvCtrlUtil.CheckPVExists())
+            if (CheckPvExists())
             {
                 Automation.AddAutomationEventHandler(
                     WindowPattern.WindowOpenedEvent,
-                    AutomationElement.FromHandle(PvCtrlUtil.GetPVProcess().MainWindowHandle),
+                    AutomationElement.FromHandle(GetPvProcess().MainWindowHandle),
                     TreeScope.Children,
                     (sender, e) =>
                     {
-                        var element = sender as AutomationElement;
+                        var element = (AutomationElement)sender;
                         if (element.Current.Name != "名前を付けて保存") return;
                         //if (element.Current.Name != "開く") return;
 
-                        var filenameBox = PvCtrlUtil.getAutomationElement(element, TreeScope.Descendants, ControlType.Edit, "ファイル名:");
-                        var filenameBoxValuePattern = filenameBox.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern;
+                        var filenameBox = PvCtrlUtil.GetAutomationElement(element, TreeScope.Descendants, ControlType.Edit, "ファイル名:");
+                        var filenameBoxValuePattern = (ValuePattern)filenameBox.GetCurrentPattern(ValuePattern.Pattern);
                         filenameBoxValuePattern.SetValue(filename);
                         while (filenameBoxValuePattern.Current.Value != filename)
                         {
                             Debug.WriteLine(filenameBoxValuePattern.Current.Value);
                             Thread.Sleep(100);
                         }
-
-                        //var submitButton = PvCtrlUtil.getAutomationElement(element, TreeScope.Children, ControlType.Button, "開く(O)");
-                        var submitButton = PvCtrlUtil.getAutomationElement(element, TreeScope.Children, ControlType.Button, "保存(S)");
-                        (submitButton.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern).Invoke();
-                        Automation.RemoveAllEventHandlers();
                     });
             }
         }
 
-        static public AutomationElement getAutomationElement(AutomationElement parent, TreeScope scope, ControlType type, string name)
+        private static AutomationElement GetAutomationElement(AutomationElement parent, TreeScope scope, ControlType type, string name)
         {
             return parent.FindFirst(scope, new AndCondition(
                 new PropertyCondition(AutomationElement.ControlTypeProperty, type),
@@ -143,41 +142,36 @@ namespace PVCtrl
                 Automation.ControlViewCondition));
         }
 
-        static public void StartRecTimer(int minutes, int alarmMinute, Action<DateTime> elapsedHandler, Action<bool> stopHandler)
+        public static void StartRecTimer(int minutes, int alarmMinute, Action<DateTime> elapsedHandler, Action<bool> stopHandler)
         {
             var alarmed = (alarmMinute == 0);
             var stopTime = DateTime.Now.AddMinutes(minutes);
-            PvCtrlUtil.stopHandler = stopHandler;
-            PvCtrlUtil.recTimer = new Timer(1000);
-            PvCtrlUtil.recTimer.Elapsed += (object sender, ElapsedEventArgs e) =>
+            _recStopHandler = stopHandler;
+            _recTimer = new Timer(1000);
+            _recTimer.Elapsed += (sender, e) =>
             {
                 elapsedHandler(stopTime);
                 if (stopTime.AddMinutes(-alarmMinute) < DateTime.Now)
                 {
                     if (!alarmed)
                     {
-                        new SoundPlayer(Properties.Resources.TimeStopSound).Play();
+                        new SoundPlayer(Resources.TimeStopSound).Play();
                         alarmed = true;
                     }
                 }
                 if (stopTime < DateTime.Now)
                 {
-                    PvCtrlUtil.StopRecTimer(true);
+                    StopRecTimer(true);
                 }
             };
-            PvCtrlUtil.recTimer.Start();
+            _recTimer.Start();
         }
 
-        static public void StopRecTimer(bool recStop)
+        public static void StopRecTimer(bool recStop)
         {
-            if (PvCtrlUtil.recTimer != null && PvCtrlUtil.recTimer.Enabled)
-            {
-                PvCtrlUtil.recTimer.Stop();
-                if (PvCtrlUtil.stopHandler != null)
-                {
-                    PvCtrlUtil.stopHandler(recStop);
-                }
-            }
+            if (_recTimer?.Enabled != true) return;
+            _recTimer.Stop();
+            _recStopHandler?.Invoke(recStop);
         }
     }
 }

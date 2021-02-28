@@ -1,4 +1,6 @@
-﻿namespace PVCtrl
+﻿using System.Windows.Forms;
+
+namespace PVCtrl
 {
     partial class PvCtrl
     {
@@ -82,7 +84,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1182, 55);
-            this.flowLayoutPanel1.TabIndex = 6;
+            this.flowLayoutPanel1.TabIndex = 0;
             //
             // FilenameCaptionLabel
             //
@@ -120,7 +122,7 @@
             this.Filler1Label.Name = "Filler1Label";
             this.Filler1Label.Size = new System.Drawing.Size(21, 31);
             this.Filler1Label.TabIndex = 0;
-            this.Filler1Label.Text = " ";
+            this.Filler1Label.Text = "";
             //
             // RecButton
             //
@@ -146,127 +148,6 @@
             this.StopButton.UseVisualStyleBackColor = true;
             this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             //
-            // flowLayoutPanel7
-            //
-            this.flowLayoutPanel7.Controls.Add(this.InvokePVButton);
-            this.flowLayoutPanel7.Controls.Add(this.LineCaptionLabel);
-            this.flowLayoutPanel7.Controls.Add(this.LineAButton);
-            this.flowLayoutPanel7.Controls.Add(this.LineBButton);
-            this.flowLayoutPanel7.Controls.Add(this.SoundCaptionLabel);
-            this.flowLayoutPanel7.Controls.Add(this.SoundOnButton);
-            this.flowLayoutPanel7.Controls.Add(this.AlarmCaptionLabel);
-            this.flowLayoutPanel7.Controls.Add(this.AlarmUpDown);
-            this.flowLayoutPanel7.Controls.Add(this.AlarmCaption2Label);
-            this.flowLayoutPanel7.Location = new System.Drawing.Point(12, 128);
-            this.flowLayoutPanel7.Name = "flowLayoutPanel7";
-            this.flowLayoutPanel7.Size = new System.Drawing.Size(876, 52);
-            this.flowLayoutPanel7.TabIndex = 6;
-            //
-            // InvokePVButton
-            //
-            this.InvokePVButton.Location = new System.Drawing.Point(3, 3);
-            this.InvokePVButton.Name = "InvokePVButton";
-            this.InvokePVButton.Size = new System.Drawing.Size(120, 46);
-            this.InvokePVButton.TabIndex = 12;
-            this.InvokePVButton.Text = "PV起動";
-            this.InvokePVButton.UseVisualStyleBackColor = true;
-            this.InvokePVButton.Click += new System.EventHandler(this.InvokePVButton_Click);
-            //
-            // LineCaptionLabel
-            //
-            this.LineCaptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.LineCaptionLabel.AutoSize = true;
-            this.LineCaptionLabel.Location = new System.Drawing.Point(129, 10);
-            this.LineCaptionLabel.Name = "LineCaptionLabel";
-            this.LineCaptionLabel.Size = new System.Drawing.Size(117, 31);
-            this.LineCaptionLabel.TabIndex = 0;
-            this.LineCaptionLabel.Text = " 入力端子";
-            //
-            // LineAButton
-            //
-            this.LineAButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.LineAButton.Location = new System.Drawing.Point(252, 3);
-            this.LineAButton.Name = "LineAButton";
-            this.LineAButton.Size = new System.Drawing.Size(46, 46);
-            this.LineAButton.TabIndex = 13;
-            this.LineAButton.Tag = "require_pv";
-            this.LineAButton.Text = "A";
-            this.LineAButton.UseVisualStyleBackColor = true;
-            this.LineAButton.Click += new System.EventHandler(this.LineAButton_Click);
-            //
-            // LineBButton
-            //
-            this.LineBButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.LineBButton.Location = new System.Drawing.Point(304, 3);
-            this.LineBButton.Name = "LineBButton";
-            this.LineBButton.Size = new System.Drawing.Size(46, 46);
-            this.LineBButton.TabIndex = 14;
-            this.LineBButton.Tag = "require_pv";
-            this.LineBButton.Text = "B";
-            this.LineBButton.UseVisualStyleBackColor = true;
-            this.LineBButton.Click += new System.EventHandler(this.LineBButton_Click);
-            //
-            // SoundCaptionLabel
-            //
-            this.SoundCaptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.SoundCaptionLabel.AutoSize = true;
-            this.SoundCaptionLabel.Location = new System.Drawing.Point(356, 10);
-            this.SoundCaptionLabel.Name = "SoundCaptionLabel";
-            this.SoundCaptionLabel.Size = new System.Drawing.Size(69, 31);
-            this.SoundCaptionLabel.TabIndex = 0;
-            this.SoundCaptionLabel.Text = " 音声";
-            //
-            // SoundOnButton
-            //
-            this.SoundOnButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.SoundOnButton.Location = new System.Drawing.Point(431, 3);
-            this.SoundOnButton.Name = "SoundOnButton";
-            this.SoundOnButton.Size = new System.Drawing.Size(96, 46);
-            this.SoundOnButton.TabIndex = 15;
-            this.SoundOnButton.Tag = "require_pv";
-            this.SoundOnButton.Text = "on/off";
-            this.SoundOnButton.UseVisualStyleBackColor = true;
-            this.SoundOnButton.Click += new System.EventHandler(this.SoundOnButton_Click);
-            //
-            // AlarmCaptionLabel
-            //
-            this.AlarmCaptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.AlarmCaptionLabel.AutoSize = true;
-            this.AlarmCaptionLabel.Location = new System.Drawing.Point(533, 10);
-            this.AlarmCaptionLabel.Name = "AlarmCaptionLabel";
-            this.AlarmCaptionLabel.Size = new System.Drawing.Size(117, 31);
-            this.AlarmCaptionLabel.TabIndex = 0;
-            this.AlarmCaptionLabel.Text = " アラーム";
-            //
-            // AlarmUpDown
-            //
-            this.AlarmUpDown.Location = new System.Drawing.Point(656, 3);
-            this.AlarmUpDown.Maximum = new decimal(new int[] {
-            1440,
-            0,
-            0,
-            0});
-            this.AlarmUpDown.Name = "AlarmUpDown";
-            this.AlarmUpDown.Size = new System.Drawing.Size(100, 46);
-            this.AlarmUpDown.TabIndex = 10;
-            this.AlarmUpDown.Tag = 2;
-            this.AlarmUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.AlarmUpDown.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            //
-            // AlarmCaption2Label
-            //
-            this.AlarmCaption2Label.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.AlarmCaption2Label.AutoSize = true;
-            this.AlarmCaption2Label.Location = new System.Drawing.Point(762, 10);
-            this.AlarmCaption2Label.Name = "AlarmCaption2Label";
-            this.AlarmCaption2Label.Size = new System.Drawing.Size(62, 31);
-            this.AlarmCaption2Label.TabIndex = 0;
-            this.AlarmCaption2Label.Text = "分前";
-            //
             // flowLayoutPanel10
             //
             this.flowLayoutPanel10.Controls.Add(this.Min30Button);
@@ -280,14 +161,14 @@
             this.flowLayoutPanel10.Location = new System.Drawing.Point(12, 70);
             this.flowLayoutPanel10.Name = "flowLayoutPanel10";
             this.flowLayoutPanel10.Size = new System.Drawing.Size(876, 55);
-            this.flowLayoutPanel10.TabIndex = 9;
+            this.flowLayoutPanel10.TabIndex = 0;
             //
             // Min30Button
             //
             this.Min30Button.Location = new System.Drawing.Point(3, 3);
             this.Min30Button.Name = "Min30Button";
             this.Min30Button.Size = new System.Drawing.Size(80, 46);
-            this.Min30Button.TabIndex = 5;
+            this.Min30Button.TabIndex = 6;
             this.Min30Button.Text = "30";
             this.Min30Button.UseVisualStyleBackColor = true;
             this.Min30Button.Click += new System.EventHandler(this.Min30Button_Click);
@@ -297,7 +178,7 @@
             this.Min60Button.Location = new System.Drawing.Point(89, 3);
             this.Min60Button.Name = "Min60Button";
             this.Min60Button.Size = new System.Drawing.Size(80, 46);
-            this.Min60Button.TabIndex = 6;
+            this.Min60Button.TabIndex = 7;
             this.Min60Button.Text = "60";
             this.Min60Button.UseVisualStyleBackColor = true;
             this.Min60Button.Click += new System.EventHandler(this.Min60Button_Click);
@@ -307,7 +188,7 @@
             this.Min90Button.Location = new System.Drawing.Point(175, 3);
             this.Min90Button.Name = "Min90Button";
             this.Min90Button.Size = new System.Drawing.Size(80, 46);
-            this.Min90Button.TabIndex = 7;
+            this.Min90Button.TabIndex = 8;
             this.Min90Button.Text = "90";
             this.Min90Button.UseVisualStyleBackColor = true;
             this.Min90Button.Click += new System.EventHandler(this.Min90Button_Click);
@@ -317,7 +198,7 @@
             this.Min120Button.Location = new System.Drawing.Point(261, 3);
             this.Min120Button.Name = "Min120Button";
             this.Min120Button.Size = new System.Drawing.Size(80, 46);
-            this.Min120Button.TabIndex = 8;
+            this.Min120Button.TabIndex = 9;
             this.Min120Button.Text = "120";
             this.Min120Button.UseVisualStyleBackColor = true;
             this.Min120Button.Click += new System.EventHandler(this.Min120Button_Click);
@@ -327,7 +208,7 @@
             this.Min180Button.Location = new System.Drawing.Point(347, 3);
             this.Min180Button.Name = "Min180Button";
             this.Min180Button.Size = new System.Drawing.Size(80, 46);
-            this.Min180Button.TabIndex = 8;
+            this.Min180Button.TabIndex = 10;
             this.Min180Button.Text = "180";
             this.Min180Button.UseVisualStyleBackColor = true;
             this.Min180Button.Click += new System.EventHandler(this.Min180Button_Click);
@@ -335,26 +216,14 @@
             // MinUpDown
             //
             this.MinUpDown.Location = new System.Drawing.Point(433, 3);
-            this.MinUpDown.Maximum = new decimal(new int[] {
-            1440,
-            0,
-            0,
-            0});
-            this.MinUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.MinUpDown.Maximum = new decimal(new int[] {1440, 0, 0, 0});
+            this.MinUpDown.Minimum = new decimal(new int[] {1, 0, 0, 0});
             this.MinUpDown.Name = "MinUpDown";
             this.MinUpDown.Size = new System.Drawing.Size(100, 46);
-            this.MinUpDown.TabIndex = 10;
+            this.MinUpDown.TabIndex = 11;
             this.MinUpDown.Tag = 30;
             this.MinUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.MinUpDown.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
+            this.MinUpDown.Value = new decimal(new int[] {30, 0, 0, 0});
             //
             // StopReserveMinLabel
             //
@@ -375,7 +244,7 @@
             this.StopReserveCheckBox.Location = new System.Drawing.Point(607, 3);
             this.StopReserveCheckBox.Name = "StopReserveCheckBox";
             this.StopReserveCheckBox.Size = new System.Drawing.Size(187, 45);
-            this.StopReserveCheckBox.TabIndex = 11;
+            this.StopReserveCheckBox.TabIndex = 12;
             this.StopReserveCheckBox.Text = "録画停止予約";
             this.StopReserveCheckBox.UseVisualStyleBackColor = true;
             this.StopReserveCheckBox.CheckedChanged += new System.EventHandler(this.StopReserveCheckBox_CheckedChanged);
@@ -423,6 +292,119 @@
             this.RemainedTimeLabel.TabIndex = 0;
             this.RemainedTimeLabel.Text = "00:00:00";
             //
+            // flowLayoutPanel7
+            //
+            this.flowLayoutPanel7.Controls.Add(this.InvokePVButton);
+            this.flowLayoutPanel7.Controls.Add(this.LineCaptionLabel);
+            this.flowLayoutPanel7.Controls.Add(this.LineAButton);
+            this.flowLayoutPanel7.Controls.Add(this.LineBButton);
+            this.flowLayoutPanel7.Controls.Add(this.SoundCaptionLabel);
+            this.flowLayoutPanel7.Controls.Add(this.SoundOnButton);
+            this.flowLayoutPanel7.Controls.Add(this.AlarmCaptionLabel);
+            this.flowLayoutPanel7.Controls.Add(this.AlarmUpDown);
+            this.flowLayoutPanel7.Controls.Add(this.AlarmCaption2Label);
+            this.flowLayoutPanel7.Location = new System.Drawing.Point(12, 128);
+            this.flowLayoutPanel7.Name = "flowLayoutPanel7";
+            this.flowLayoutPanel7.Size = new System.Drawing.Size(876, 52);
+            this.flowLayoutPanel7.TabIndex = 0;
+            //
+            // InvokePVButton
+            //
+            this.InvokePVButton.Location = new System.Drawing.Point(3, 3);
+            this.InvokePVButton.Name = "InvokePVButton";
+            this.InvokePVButton.Size = new System.Drawing.Size(120, 46);
+            this.InvokePVButton.TabIndex = 13;
+            this.InvokePVButton.Text = "PV起動";
+            this.InvokePVButton.UseVisualStyleBackColor = true;
+            this.InvokePVButton.Click += new System.EventHandler(this.InvokePVButton_Click);
+            //
+            // LineCaptionLabel
+            //
+            this.LineCaptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.LineCaptionLabel.AutoSize = true;
+            this.LineCaptionLabel.Location = new System.Drawing.Point(129, 10);
+            this.LineCaptionLabel.Name = "LineCaptionLabel";
+            this.LineCaptionLabel.Size = new System.Drawing.Size(117, 31);
+            this.LineCaptionLabel.TabIndex = 0;
+            this.LineCaptionLabel.Text = " 入力端子";
+            //
+            // LineAButton
+            //
+            this.LineAButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LineAButton.Location = new System.Drawing.Point(252, 3);
+            this.LineAButton.Name = "LineAButton";
+            this.LineAButton.Size = new System.Drawing.Size(46, 46);
+            this.LineAButton.TabIndex = 14;
+            this.LineAButton.Tag = "require_pv";
+            this.LineAButton.Text = "A";
+            this.LineAButton.UseVisualStyleBackColor = true;
+            this.LineAButton.Click += new System.EventHandler(this.LineAButton_Click);
+            //
+            // LineBButton
+            //
+            this.LineBButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LineBButton.Location = new System.Drawing.Point(304, 3);
+            this.LineBButton.Name = "LineBButton";
+            this.LineBButton.Size = new System.Drawing.Size(46, 46);
+            this.LineBButton.TabIndex = 15;
+            this.LineBButton.Tag = "require_pv";
+            this.LineBButton.Text = "B";
+            this.LineBButton.UseVisualStyleBackColor = true;
+            this.LineBButton.Click += new System.EventHandler(this.LineBButton_Click);
+            //
+            // SoundCaptionLabel
+            //
+            this.SoundCaptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.SoundCaptionLabel.AutoSize = true;
+            this.SoundCaptionLabel.Location = new System.Drawing.Point(356, 10);
+            this.SoundCaptionLabel.Name = "SoundCaptionLabel";
+            this.SoundCaptionLabel.Size = new System.Drawing.Size(69, 31);
+            this.SoundCaptionLabel.TabIndex = 0;
+            this.SoundCaptionLabel.Text = " 音声";
+            //
+            // SoundOnButton
+            //
+            this.SoundOnButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.SoundOnButton.Location = new System.Drawing.Point(431, 3);
+            this.SoundOnButton.Name = "SoundOnButton";
+            this.SoundOnButton.Size = new System.Drawing.Size(96, 46);
+            this.SoundOnButton.TabIndex = 16;
+            this.SoundOnButton.Tag = "require_pv";
+            this.SoundOnButton.Text = "on/off";
+            this.SoundOnButton.UseVisualStyleBackColor = true;
+            this.SoundOnButton.Click += new System.EventHandler(this.SoundOnButton_Click);
+            //
+            // AlarmCaptionLabel
+            //
+            this.AlarmCaptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.AlarmCaptionLabel.AutoSize = true;
+            this.AlarmCaptionLabel.Location = new System.Drawing.Point(533, 10);
+            this.AlarmCaptionLabel.Name = "AlarmCaptionLabel";
+            this.AlarmCaptionLabel.Size = new System.Drawing.Size(117, 31);
+            this.AlarmCaptionLabel.TabIndex = 0;
+            this.AlarmCaptionLabel.Text = " アラーム";
+            //
+            // AlarmUpDown
+            //
+            this.AlarmUpDown.Location = new System.Drawing.Point(656, 3);
+            this.AlarmUpDown.Maximum = new decimal(new int[] {1440, 0, 0, 0});
+            this.AlarmUpDown.Name = "AlarmUpDown";
+            this.AlarmUpDown.Size = new System.Drawing.Size(100, 46);
+            this.AlarmUpDown.TabIndex = 17;
+            this.AlarmUpDown.Tag = 2;
+            this.AlarmUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.AlarmUpDown.Value = new decimal(new int[] {2, 0, 0, 0});
+            //
+            // AlarmCaption2Label
+            //
+            this.AlarmCaption2Label.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.AlarmCaption2Label.AutoSize = true;
+            this.AlarmCaption2Label.Location = new System.Drawing.Point(762, 10);
+            this.AlarmCaption2Label.Name = "AlarmCaption2Label";
+            this.AlarmCaption2Label.Size = new System.Drawing.Size(62, 31);
+            this.AlarmCaption2Label.TabIndex = 0;
+            this.AlarmCaption2Label.Text = "分前";
+            //
             // flowLayoutPanel2
             //
             this.flowLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -434,7 +416,7 @@
             this.flowLayoutPanel2.Location = new System.Drawing.Point(892, 70);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(301, 110);
-            this.flowLayoutPanel2.TabIndex = 11;
+            this.flowLayoutPanel2.TabIndex = 0;
             //
             // MessageTextBox
             //
@@ -444,7 +426,7 @@
             this.MessageTextBox.Name = "MessageTextBox";
             this.MessageTextBox.ReadOnly = true;
             this.MessageTextBox.Size = new System.Drawing.Size(1182, 108);
-            this.MessageTextBox.TabIndex = 12;
+            this.MessageTextBox.TabIndex = 0;
             //
             // PvCtrl
             //
