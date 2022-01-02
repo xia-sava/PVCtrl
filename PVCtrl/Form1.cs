@@ -139,9 +139,9 @@ namespace PVCtrl
                     {
                         Invoke((MethodInvoker) (() => StopTimeLabel.Text = $"{stopTime:HH:mm:ss}"));
                         Invoke((MethodInvoker) (() =>
-                            RemainedTimeLabel.Text = $"{(stopTime - DateTime.Now):hh:mm:ss}"));
+                            RemainedTimeLabel.Text = $"{(stopTime - DateTime.Now):hh\\:mm\\:ss}"));
                         Invoke((MethodInvoker) (() =>
-                            Text = $"PvCtrl - 録画停止予約 {(stopTime - DateTime.Now):hh:mm:ss}"));
+                            Text = $"PvCtrl - 録画停止予約 {(stopTime - DateTime.Now):hh\\:mm\\:ss}"));
                     },
                     pvRecStop =>
                     {
@@ -208,6 +208,16 @@ namespace PVCtrl
             Settings.Default.WindowState = WindowState;
 
             Settings.Default.Save();
+        }
+
+        private void ClosePvReserveCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBox checkBox)
+            {
+                PvCtrlUtil.ClosePvReserve = checkBox.Checked;
+                var mode = checkBox.Checked ? "セット" : "解除";
+                ShowMessage($"PVクローズ予約を{mode}しました．");
+            }
         }
     }
 }

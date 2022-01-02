@@ -17,6 +17,8 @@ namespace PVCtrl
         private static Timer _recTimer;
         private static Action<bool> _recStopHandler;
 
+        public static bool ClosePvReserve { set; get; }
+
         public static bool CheckPvExists()
         {
             return (GetPvProcess() != null);
@@ -171,6 +173,11 @@ namespace PVCtrl
             if (_recTimer?.Enabled != true) return;
             _recTimer.Stop();
             _recStopHandler?.Invoke(recStop);
+            if (recStop && ClosePvReserve)
+            {
+                ControlMenu(new[] { "ファイル", "終了" });
+                // Application.SetSuspendState(PowerState.Hibernate, false, false);  // 休止状態
+            }
         }
     }
 }
