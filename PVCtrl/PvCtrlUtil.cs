@@ -17,14 +17,12 @@ namespace PVCtrl
         private static Timer _recTimer;
         private static Action<bool> _recStopHandler;
 
-        // ReSharper disable once MemberCanBePrivate.Global
         public static bool CheckPvExists()
         {
             return (GetPvProcess() != null);
         }
 
 
-        // ReSharper disable once MemberCanBePrivate.Global
         public static Process GetPvProcess()
         {
             foreach (Process p in Process.GetProcesses())
@@ -60,7 +58,6 @@ namespace PVCtrl
         }
 
 
-        // ReSharper disable once UnusedMethodReturnValue.Global
         public static bool ControlMenu(string[] menuItems)
         {
             var pvProcess = GetPvProcess();
@@ -119,16 +116,18 @@ namespace PVCtrl
                     {
                         var element = (AutomationElement)sender;
                         if (element.Current.Name != "名前を付けて保存") return;
-                        //if (element.Current.Name != "開く") return;
 
                         var filenameBox = PvCtrlUtil.GetAutomationElement(element, TreeScope.Descendants, ControlType.Edit, "ファイル名:");
                         var filenameBoxValuePattern = (ValuePattern)filenameBox.GetCurrentPattern(ValuePattern.Pattern);
                         filenameBoxValuePattern.SetValue(filename);
                         while (filenameBoxValuePattern.Current.Value != filename)
                         {
-                            Debug.WriteLine(filenameBoxValuePattern.Current.Value);
                             Thread.Sleep(100);
                         }
+
+                        var submitButton = GetAutomationElement(element, TreeScope.Children, ControlType.Button, "保存(S)");
+                        ((InvokePattern)submitButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+                        Automation.RemoveAllEventHandlers();
                     });
             }
         }
