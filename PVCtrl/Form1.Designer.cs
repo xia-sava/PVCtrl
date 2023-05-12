@@ -49,6 +49,7 @@ namespace PVCtrl
             this.AlarmUpDown = new PVCtrl.WheelableNumericUpDown();
             this.AlarmCaption2Label = new System.Windows.Forms.Label();
             this.flowLayoutPanel10 = new System.Windows.Forms.FlowLayoutPanel();
+            this.Min25Button = new System.Windows.Forms.Button();
             this.Min30Button = new System.Windows.Forms.Button();
             this.Min60Button = new System.Windows.Forms.Button();
             this.Min90Button = new System.Windows.Forms.Button();
@@ -262,6 +263,7 @@ namespace PVCtrl
             // 
             // flowLayoutPanel10
             // 
+            this.flowLayoutPanel10.Controls.Add(this.Min25Button);
             this.flowLayoutPanel10.Controls.Add(this.Min30Button);
             this.flowLayoutPanel10.Controls.Add(this.Min60Button);
             this.flowLayoutPanel10.Controls.Add(this.Min90Button);
@@ -275,11 +277,21 @@ namespace PVCtrl
             this.flowLayoutPanel10.Size = new System.Drawing.Size(876, 55);
             this.flowLayoutPanel10.TabIndex = 0;
             // 
+            // Min25Button
+            // 
+            this.Min25Button.Location = new System.Drawing.Point(3, 3);
+            this.Min25Button.Name = "Min25Button";
+            this.Min25Button.Size = new System.Drawing.Size(64, 46);
+            this.Min25Button.TabIndex = 5;
+            this.Min25Button.Text = "25";
+            this.Min25Button.UseVisualStyleBackColor = true;
+            this.Min25Button.Click += new System.EventHandler(this.Min25Button_Click);
+            // 
             // Min30Button
             // 
-            this.Min30Button.Location = new System.Drawing.Point(3, 3);
+            this.Min30Button.Location = new System.Drawing.Point(73, 3);
             this.Min30Button.Name = "Min30Button";
-            this.Min30Button.Size = new System.Drawing.Size(80, 46);
+            this.Min30Button.Size = new System.Drawing.Size(64, 46);
             this.Min30Button.TabIndex = 6;
             this.Min30Button.Text = "30";
             this.Min30Button.UseVisualStyleBackColor = true;
@@ -287,9 +299,9 @@ namespace PVCtrl
             // 
             // Min60Button
             // 
-            this.Min60Button.Location = new System.Drawing.Point(89, 3);
+            this.Min60Button.Location = new System.Drawing.Point(143, 3);
             this.Min60Button.Name = "Min60Button";
-            this.Min60Button.Size = new System.Drawing.Size(80, 46);
+            this.Min60Button.Size = new System.Drawing.Size(64, 46);
             this.Min60Button.TabIndex = 7;
             this.Min60Button.Text = "60";
             this.Min60Button.UseVisualStyleBackColor = true;
@@ -297,9 +309,9 @@ namespace PVCtrl
             // 
             // Min90Button
             // 
-            this.Min90Button.Location = new System.Drawing.Point(175, 3);
+            this.Min90Button.Location = new System.Drawing.Point(213, 3);
             this.Min90Button.Name = "Min90Button";
-            this.Min90Button.Size = new System.Drawing.Size(80, 46);
+            this.Min90Button.Size = new System.Drawing.Size(64, 46);
             this.Min90Button.TabIndex = 8;
             this.Min90Button.Text = "90";
             this.Min90Button.UseVisualStyleBackColor = true;
@@ -307,9 +319,9 @@ namespace PVCtrl
             // 
             // Min120Button
             // 
-            this.Min120Button.Location = new System.Drawing.Point(261, 3);
+            this.Min120Button.Location = new System.Drawing.Point(283, 3);
             this.Min120Button.Name = "Min120Button";
-            this.Min120Button.Size = new System.Drawing.Size(80, 46);
+            this.Min120Button.Size = new System.Drawing.Size(64, 46);
             this.Min120Button.TabIndex = 9;
             this.Min120Button.Text = "120";
             this.Min120Button.UseVisualStyleBackColor = true;
@@ -317,9 +329,9 @@ namespace PVCtrl
             // 
             // Min180Button
             // 
-            this.Min180Button.Location = new System.Drawing.Point(347, 3);
+            this.Min180Button.Location = new System.Drawing.Point(353, 3);
             this.Min180Button.Name = "Min180Button";
-            this.Min180Button.Size = new System.Drawing.Size(80, 46);
+            this.Min180Button.Size = new System.Drawing.Size(64, 46);
             this.Min180Button.TabIndex = 10;
             this.Min180Button.Text = "180";
             this.Min180Button.UseVisualStyleBackColor = true;
@@ -327,7 +339,7 @@ namespace PVCtrl
             // 
             // MinUpDown
             // 
-            this.MinUpDown.Location = new System.Drawing.Point(433, 3);
+            this.MinUpDown.Location = new System.Drawing.Point(423, 3);
             this.MinUpDown.Maximum = new decimal(new int[] { 1440, 0, 0, 0 });
             this.MinUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             this.MinUpDown.Name = "MinUpDown";
@@ -341,7 +353,7 @@ namespace PVCtrl
             // 
             this.StopReserveMinLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.StopReserveMinLabel.AutoSize = true;
-            this.StopReserveMinLabel.Location = new System.Drawing.Point(539, 10);
+            this.StopReserveMinLabel.Location = new System.Drawing.Point(529, 10);
             this.StopReserveMinLabel.Name = "StopReserveMinLabel";
             this.StopReserveMinLabel.Size = new System.Drawing.Size(62, 31);
             this.StopReserveMinLabel.TabIndex = 0;
@@ -353,7 +365,7 @@ namespace PVCtrl
             this.StopReserveCheckBox.AutoSize = true;
             this.StopReserveCheckBox.Font = new System.Drawing.Font("游ゴシック", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.StopReserveCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.StopReserveCheckBox.Location = new System.Drawing.Point(607, 3);
+            this.StopReserveCheckBox.Location = new System.Drawing.Point(597, 3);
             this.StopReserveCheckBox.Name = "StopReserveCheckBox";
             this.StopReserveCheckBox.Size = new System.Drawing.Size(187, 45);
             this.StopReserveCheckBox.TabIndex = 12;
@@ -423,7 +435,7 @@ namespace PVCtrl
             this.ClosePvReserveCheckBox.Name = "ClosePvReserveCheckBox";
             this.ClosePvReserveCheckBox.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.ClosePvReserveCheckBox.Size = new System.Drawing.Size(285, 34);
-            this.ClosePvReserveCheckBox.TabIndex = 1;
+            this.ClosePvReserveCheckBox.TabIndex = 18;
             this.ClosePvReserveCheckBox.Text = "停止後にPVを閉じる";
             this.ClosePvReserveCheckBox.UseVisualStyleBackColor = true;
             this.ClosePvReserveCheckBox.CheckedChanged += new System.EventHandler(this.ClosePvReserveCheckBox_CheckedChanged);
@@ -469,8 +481,6 @@ namespace PVCtrl
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.CheckBox ClosePvReserveCheckBox;
-
         #endregion
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Label FilenameCaptionLabel;
@@ -487,11 +497,13 @@ namespace PVCtrl
         private System.Windows.Forms.Label SoundCaptionLabel;
         private System.Windows.Forms.Button SoundOnButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel10;
+        private System.Windows.Forms.Button Min25Button;
         private System.Windows.Forms.Button Min30Button;
         private System.Windows.Forms.Button Min60Button;
         private System.Windows.Forms.Button Min90Button;
         private System.Windows.Forms.Button Min120Button;
-        private WheelableNumericUpDown MinUpDown;
+        private System.Windows.Forms.Button Min180Button;
+        private PVCtrl.WheelableNumericUpDown MinUpDown;
         private System.Windows.Forms.Label StopReserveMinLabel;
         private System.Windows.Forms.CheckBox StopReserveCheckBox;
         private System.Windows.Forms.Label StopTimeCaptionLabel;
@@ -499,11 +511,11 @@ namespace PVCtrl
         private System.Windows.Forms.Label StopTimeLabel;
         private System.Windows.Forms.Label RemainedTimeLabel;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
-        private System.Windows.Forms.Button Min180Button;
         private System.Windows.Forms.Label AlarmCaptionLabel;
         private WheelableNumericUpDown AlarmUpDown;
         private System.Windows.Forms.Label AlarmCaption2Label;
         private System.Windows.Forms.TextBox MessageTextBox;
+        private System.Windows.Forms.CheckBox ClosePvReserveCheckBox;
     }
 }
 

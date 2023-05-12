@@ -101,29 +101,40 @@ namespace PVCtrl
             StopReserveCheckBox.Checked = false;
         }
 
+        private void Min25Button_Click(object sender, EventArgs e)
+        {
+            MinUpDown.Value = 25;
+            AlarmUpDown.Value = 1;
+        }
+
         private void Min30Button_Click(object sender, EventArgs e)
         {
             MinUpDown.Value = 30;
+            AlarmUpDown.Value = 2;
         }
 
         private void Min60Button_Click(object sender, EventArgs e)
         {
             MinUpDown.Value = 60;
+            AlarmUpDown.Value = 2;
         }
 
         private void Min90Button_Click(object sender, EventArgs e)
         {
             MinUpDown.Value = 90;
+            AlarmUpDown.Value = 2;
         }
 
         private void Min120Button_Click(object sender, EventArgs e)
         {
             MinUpDown.Value = 120;
+            AlarmUpDown.Value = 2;
         }
 
         private void Min180Button_Click(object sender, EventArgs e)
         {
             MinUpDown.Value = 180;
+            AlarmUpDown.Value = 2;
         }
 
         private void StopReserveCheckBox_CheckedChanged(object sender, EventArgs e)
