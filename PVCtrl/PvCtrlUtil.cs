@@ -19,42 +19,82 @@ namespace PVCtrl
 
         public static bool ClosePvReserve { set; get; }
 
-        public static bool CheckPvExists()
+        public static Process GetPvProcess()
         {
-            return (GetPvProcess() != null);
+            return Process.GetProcesses()
+                .FirstOrDefault(p => p.ProcessName == "PV");
         }
 
 
-        public static Process GetPvProcess()
+        private static WindowVisualState GetWindowVisualState(this Process process)
         {
-            foreach (Process p in Process.GetProcesses())
-            {
-                if (p.ProcessName == "PV")
-                {
-                    return p;
-                }
-            }
-            return null;
+            var element = AutomationElement.FromHandle(process.MainWindowHandle);
+            var windowPattern = (WindowPattern)element.GetCurrentPattern(WindowPattern.Pattern);
+            return windowPattern.Current.WindowVisualState;
+        }
+
+        private static void SetWindowVisualState(this Process process, WindowVisualState state)
+        {
+            var element = AutomationElement.FromHandle(process.MainWindowHandle);
+            var windowPattern = (WindowPattern)element.GetCurrentPattern(WindowPattern.Pattern);
+            windowPattern.SetWindowVisualState(state);
+        }
+
+        private static void RestoreWindow(this Process process)
+        {
+            process.SetWindowVisualState(WindowVisualState.Normal);
+        }
+
+        private static void MinimizeWindow(this Process process)
+        {
+            process.SetWindowVisualState(WindowVisualState.Minimized);
+        }
+
+
+        public static Process GetExistsPv()
+        {
+            var process = GetPvProcess();
+            process?.RestoreWindow();
+            return process;
         }
 
 
         public static void InvokePv()
         {
-            foreach (var filename in new[] { @"C:\Program Files\EARTH SOFT\PV\PV.exe", @"C:\Program Files (x86)\EARTH SOFT\PV\PV.exe" })
+            var process = GetPvProcess();
+            if (process != null)
             {
-
-                if (File.Exists(filename))
+                if (process.GetWindowVisualState() == WindowVisualState.Minimized)
                 {
-                    Task.Run(async () =>
+                    process.RestoreWindow();
+                }
+                else
+                {
+                    process.MinimizeWindow();
+                }
+            }
+            else
+            {
+                foreach (var filename in new[]
+                         {
+                             @"C:\Program Files\EARTH SOFT\PV\PV.exe",
+                             @"C:\Program Files (x86)\EARTH SOFT\PV\PV.exe",
+                         }
+                        )
+                {
+                    if (File.Exists(filename))
                     {
-                        var proc = Process.Start(filename);
-                        if (proc != null)
+                        Task.Run(async () =>
                         {
-                            await Task.Delay(3000);
-                            proc.PriorityClass = ProcessPriorityClass.High;
-                        }
-                    });
-                    return;
+                            var proc = Process.Start(filename);
+                            if (proc != null)
+                            {
+                                await Task.Delay(3000);
+                                proc.PriorityClass = ProcessPriorityClass.High;
+                            }
+                        });
+                        return;
+                    }
                 }
             }
         }
@@ -62,7 +102,7 @@ namespace PVCtrl
 
         public static bool ControlMenu(string[] menuItems)
         {
-            var pvProcess = GetPvProcess();
+            var pvProcess = GetExistsPv();
             if (pvProcess != null)
             {
                 var retry = 10;
@@ -77,21 +117,25 @@ namespace PVCtrl
                         var current = menubar;
                         foreach (var name in menuItems.Take(menuItems.Count() - 1))
                         {
-                            var menuItem = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem, name);
-                            var menuPattern = menuItem.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
+                            var menuItem = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
+                                name);
+                            var menuPattern =
+                                menuItem.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
                             menuPattern?.Expand();
                             while (menuPattern?.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
                             {
                                 Thread.Sleep(100);
                             }
+
                             current = menuItem;
                         }
-                        var command = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem, menuItems.Last());
+
+                        var command = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
+                            menuItems.Last());
                         if (command.Current.IsEnabled)
                         {
                             var commandPattern = command.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
                             commandPattern?.Invoke();
-
                         }
 
                         return true;
@@ -103,23 +147,26 @@ namespace PVCtrl
                     }
                 }
             }
+
             return false;
         }
 
         public static void SetSubmitSaveAsDialog(string filename)
         {
-            if (CheckPvExists())
+            var process = GetExistsPv();
+            if (process != null)
             {
                 Automation.AddAutomationEventHandler(
                     WindowPattern.WindowOpenedEvent,
-                    AutomationElement.FromHandle(GetPvProcess().MainWindowHandle),
+                    AutomationElement.FromHandle(process.MainWindowHandle),
                     TreeScope.Children,
                     (sender, e) =>
                     {
                         var element = (AutomationElement)sender;
                         if (element.Current.Name != "名前を付けて保存") return;
 
-                        var filenameBox = PvCtrlUtil.GetAutomationElement(element, TreeScope.Descendants, ControlType.Edit, "ファイル名:");
+                        var filenameBox = PvCtrlUtil.GetAutomationElement(element, TreeScope.Descendants,
+                            ControlType.Edit, "ファイル名:");
                         var filenameBoxValuePattern = (ValuePattern)filenameBox.GetCurrentPattern(ValuePattern.Pattern);
                         filenameBoxValuePattern.SetValue(filename);
                         while (filenameBoxValuePattern.Current.Value != filename)
@@ -127,14 +174,16 @@ namespace PVCtrl
                             Thread.Sleep(100);
                         }
 
-                        var submitButton = GetAutomationElement(element, TreeScope.Children, ControlType.Button, "保存(S)");
+                        var submitButton =
+                            GetAutomationElement(element, TreeScope.Children, ControlType.Button, "保存(S)");
                         ((InvokePattern)submitButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
                         Automation.RemoveAllEventHandlers();
                     });
             }
         }
 
-        private static AutomationElement GetAutomationElement(AutomationElement parent, TreeScope scope, ControlType type, string name)
+        private static AutomationElement GetAutomationElement(AutomationElement parent, TreeScope scope,
+            ControlType type, string name)
         {
             return parent.FindFirst(scope, new AndCondition(
                 new PropertyCondition(AutomationElement.ControlTypeProperty, type),
@@ -143,7 +192,8 @@ namespace PVCtrl
                 Automation.ControlViewCondition));
         }
 
-        public static void StartRecTimer(int minutes, int alarmMinute, Action<DateTime> elapsedHandler, Action<bool> stopHandler)
+        public static void StartRecTimer(int minutes, int alarmMinute, Action<DateTime> elapsedHandler,
+            Action<bool> stopHandler)
         {
             var alarmed = (alarmMinute == 0);
             var stopTime = DateTime.Now.AddMinutes(minutes);
@@ -160,6 +210,7 @@ namespace PVCtrl
                         alarmed = true;
                     }
                 }
+
                 if (stopTime < DateTime.Now)
                 {
                     StopRecTimer(true);
@@ -176,7 +227,6 @@ namespace PVCtrl
             if (recStop && ClosePvReserve)
             {
                 ControlMenu(new[] { "ファイル", "終了" });
-                // Application.SetSuspendState(PowerState.Hibernate, false, false);  // 休止状態
             }
         }
     }
