@@ -27,7 +27,6 @@ static class PvCtrlUtil
             .FirstOrDefault(p => p.ProcessName == "PV");
     }
 
-
     private static WindowVisualState GetWindowVisualState(this Process process)
     {
         var element = AutomationElement.FromHandle(process.MainWindowHandle);
@@ -63,8 +62,7 @@ static class PvCtrlUtil
 
     public static void InvokePv()
     {
-        var process = GetPvProcess();
-        if (process != null)
+        if (GetPvProcess() is { } process)
         {
             if (process.GetWindowVisualState() == WindowVisualState.Minimized)
             {
@@ -88,8 +86,7 @@ static class PvCtrlUtil
                 {
                     Task.Run(async () =>
                     {
-                        var proc = Process.Start(filename);
-                        if (proc != null)
+                        if (Process.Start(filename) is { } proc)
                         {
                             await Task.Delay(3000);
                             proc.PriorityClass = ProcessPriorityClass.High;
@@ -104,49 +101,46 @@ static class PvCtrlUtil
 
     public static void ControlMenu(string[] menuItems)
     {
-        var pvProcess = GetExistsPv();
-        if (pvProcess != null)
+        if (GetExistsPv() is not { } pvProcess) return;
+        var retry = 10;
+        while (retry-- > 0)
         {
-            var retry = 10;
-            while (retry-- > 0)
+            try
             {
-                try
+                var pv = AutomationElement.FromHandle(pvProcess.MainWindowHandle);
+                var menubar = GetAutomationElement(pv, TreeScope.Children, ControlType.MenuBar, "アプリケーション");
+                Thread.Sleep(100);
+
+                var current = menubar;
+                foreach (var name in menuItems.Take(menuItems.Length - 1))
                 {
-                    var pv = AutomationElement.FromHandle(pvProcess.MainWindowHandle);
-                    var menubar = GetAutomationElement(pv, TreeScope.Children, ControlType.MenuBar, "アプリケーション");
-                    Thread.Sleep(100);
-
-                    var current = menubar;
-                    foreach (var name in menuItems.Take(menuItems.Length - 1))
+                    var menuItem = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
+                        name);
+                    var menuPattern =
+                        menuItem.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
+                    menuPattern?.Expand();
+                    while (menuPattern?.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
                     {
-                        var menuItem = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
-                            name);
-                        var menuPattern =
-                            menuItem.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
-                        menuPattern?.Expand();
-                        while (menuPattern?.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
-                        {
-                            Thread.Sleep(100);
-                        }
-
-                        current = menuItem;
+                        Thread.Sleep(100);
                     }
 
-                    var command = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
-                        menuItems.Last());
-                    if (command.Current.IsEnabled)
-                    {
-                        var commandPattern = command.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
-                        commandPattern?.Invoke();
-                    }
+                    current = menuItem;
+                }
 
-                    return;
-                }
-                catch
+                var command = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
+                    menuItems.Last());
+                if (command.Current.IsEnabled)
                 {
-                    // Automation はなぜか時々 Exception を吐くので，その時はメニューを初期状態に戻してリトライする．
-                    SendKeys.SendWait("{ESC}{ESC}{ESC}{ESC}{ESC}");
+                    var commandPattern = command.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+                    commandPattern?.Invoke();
                 }
+
+                return;
+            }
+            catch
+            {
+                // Automation はなぜか時々 Exception を吐くので，その時はメニューを初期状態に戻してリトライする．
+                SendKeys.SendWait("{ESC}{ESC}{ESC}{ESC}{ESC}");
             }
         }
     }
