@@ -20,6 +20,7 @@ static class PvCtrlUtil
     private static Action<bool>? _recStopHandler;
 
     public static bool ClosePvReserve { set; get; }
+    public static Action? OnPvClosed { set; get; }
 
     private static Process? GetPvProcess()
     {
@@ -221,6 +222,7 @@ static class PvCtrlUtil
         if (recStop && ClosePvReserve)
         {
             ControlMenu(["ファイル", "終了"]);
+            OnPvClosed?.Invoke();
         }
     }
 }

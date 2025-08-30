@@ -69,6 +69,21 @@ public partial class MainViewModel : ObservableObject
         PvCtrlUtil.ClosePvReserve = value;
         var mode = value ? "セット" : "解除";
         ShowMessage($"PVクローズ予約を{mode}しました．");
+
+        if (value)
+        {
+            PvCtrlUtil.OnPvClosed = () =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ClosePvReserveChecked = false;
+                });
+            };
+        }
+        else
+        {
+            PvCtrlUtil.OnPvClosed = null;
+        }
     }
 
     partial void OnAllowSleepChanged(bool value)
@@ -105,6 +120,7 @@ public partial class MainViewModel : ObservableObject
         _awakeService = new AwakeWhileProcessService(["TMPGEncVMW6Batch"]);
         _awakeService.Start();
     }
+
 
     [RelayCommand]
     private void FilenamePaste()
