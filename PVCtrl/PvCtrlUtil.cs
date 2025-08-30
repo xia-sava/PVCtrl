@@ -16,12 +16,12 @@ namespace PVCtrl;
 [SupportedOSPlatform("windows6.1")]
 static class PvCtrlUtil
 {
-    private static Timer _recTimer;
-    private static Action<bool> _recStopHandler;
+    private static Timer? _recTimer;
+    private static Action<bool>? _recStopHandler;
 
     public static bool ClosePvReserve { set; get; }
 
-    public static Process GetPvProcess()
+    public static Process? GetPvProcess()
     {
         return Process.GetProcesses()
             .FirstOrDefault(p => p.ProcessName == "PV");
@@ -53,7 +53,7 @@ static class PvCtrlUtil
     }
 
 
-    public static Process GetExistsPv()
+    public static Process? GetExistsPv()
     {
         var process = GetPvProcess();
         process?.RestoreWindow();
