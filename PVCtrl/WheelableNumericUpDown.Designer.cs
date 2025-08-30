@@ -2,9 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace PVCtrl
+namespace PVCtrl;
+
+partial class WheelableNumericUpDown : NumericUpDown
 {
-    partial class WheelableNumericUpDown : NumericUpDown
-    {
-    }
 }
