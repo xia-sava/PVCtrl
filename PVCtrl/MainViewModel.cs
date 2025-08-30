@@ -11,14 +11,49 @@ namespace PVCtrl;
 [SupportedOSPlatform("windows6.1")]
 public partial class MainViewModel : ObservableObject
 {
+    public const int MaxRecordingMinutes = 1440;  // 最大24時間
+    public const int MinRecordingMinutes = 1;
+    public const int MaxAlarmMinutes = 1440;
+    public const int MinAlarmMinutes = 0;
+
     [ObservableProperty]
     private string filename = "";
 
-    [ObservableProperty]
-    private string minUpDown = "30";
+    private string minutes = "30";
+    public string Minutes
+    {
+        get => minutes;
+        set
+        {
+            var normalized = NormalizeMinutes(value, MinRecordingMinutes, MaxRecordingMinutes, "30");
+            SetProperty(ref minutes, normalized);
+        }
+    }
 
-    [ObservableProperty]
-    private string alarmUpDown = "2";
+    private string alarmMinutes = "2";
+    public string AlarmMinutes
+    {
+        get => alarmMinutes;
+        set
+        {
+            var normalized = NormalizeMinutes(value, MinAlarmMinutes, MaxAlarmMinutes, "2");
+            SetProperty(ref alarmMinutes, normalized);
+        }
+    }
+
+    private static string NormalizeMinutes(string value, int min, int max, string defaultValue)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return defaultValue;
+
+        if (int.TryParse(value, out var numericValue))
+        {
+            var clamped = Math.Max(min, Math.Min(max, numericValue));
+            return clamped.ToString();
+        }
+
+        return defaultValue;
+    }
 
     [ObservableProperty]
     private bool stopReserveChecked;
@@ -38,8 +73,6 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string windowTitle = "PvCtrl";
 
-    // プロパティ（Source Generator により自動生成）
-    // StopReserveChecked と ClosePvReserveChecked は特別な処理が必要なので partial method で対応
 
     partial void OnStopReserveCheckedChanged(bool value)
     {
@@ -51,6 +84,22 @@ public partial class MainViewModel : ObservableObject
         PvCtrlUtil.ClosePvReserve = value;
         var mode = value ? "セット" : "解除";
         ShowMessage($"PVクローズ予約を{mode}しました．");
+    }
+
+    public void AdjustMinutes(int delta)
+    {
+        if (int.TryParse(Minutes, out var current))
+        {
+            Minutes = (current + delta).ToString();
+        }
+    }
+
+    public void AdjustAlarmMinutes(int delta)
+    {
+        if (int.TryParse(AlarmMinutes, out var current))
+        {
+            AlarmMinutes = (current + delta).ToString();
+        }
     }
 
     [RelayCommand]
@@ -102,10 +151,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void Min180() => SetMinutesAndAlarm(180, 2);
 
-    private void SetMinutesAndAlarm(int minutes, int alarm)
+    private void SetMinutesAndAlarm(int minutesValue, int alarmValue)
     {
-        MinUpDown = minutes.ToString();
-        AlarmUpDown = alarm.ToString();
+        Minutes = minutesValue.ToString();
+        AlarmMinutes = alarmValue.ToString();
     }
 
     [RelayCommand]
@@ -136,17 +185,15 @@ public partial class MainViewModel : ObservableObject
     {
         if (StopReserveChecked)
         {
-            if (!int.TryParse(MinUpDown, out var minutes) ||
-                !int.TryParse(AlarmUpDown, out var alarmMinutes)) return;
+            if (!int.TryParse(Minutes, out var minutesValue) ||
+                !int.TryParse(AlarmMinutes, out var alarmMinutesValue)) return;
 
-            var closePv = ClosePvReserveChecked;
-
-            var stopTime = DateTime.Now.AddMinutes(minutes);
+            var stopTime = DateTime.Now.AddMinutes(minutesValue);
             StopTimeLabel = stopTime.ToString("HH:mm:ss");
 
             PvCtrlUtil.StartRecTimer(
-                minutes,
-                alarmMinutes,
+                minutesValue,
+                alarmMinutesValue,
                 _ => {
                     var remaining = stopTime - DateTime.Now;
                     if (remaining.TotalSeconds > 0)
@@ -168,16 +215,12 @@ public partial class MainViewModel : ObservableObject
                             WindowTitle = "PvCtrl";
 
                             InvokePvMenu(["ファイル", "録画停止"], "予約により録画停止しました．");
-
-                            if (closePv)
-                            {
-                                // PVを閉じる処理はPvCtrlUtilで処理される
-                            }
                         }
+                        // PVを閉じる処理はPvCtrlUtilで処理される
                     });
                 }
             );
-            ShowMessage($"{minutes}分後に録画停止予約を設定しました．");
+            ShowMessage($"{minutesValue}分後に録画停止予約を設定しました．");
         }
         else
         {

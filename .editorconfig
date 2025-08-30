@@ -1,0 +1,55 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Code files
+[*.{cs,csx,vb,vbx}]
+indent_size = 4
+indent_style = space
+
+# C# files
+[*.cs]
+
+# CommunityToolkit.Mvvm の慣例に合わせて、[ObservableProperty] で使用する
+# private フィールドは camelCase（アンダースコアなし）
+dotnet_naming_rule.observable_property_fields_should_be_camelcase.severity = none
+dotnet_naming_rule.observable_property_fields_should_be_camelcase.symbols = observable_property_fields
+dotnet_naming_rule.observable_property_fields_should_be_camelcase.style = camelcase
+
+dotnet_naming_symbols.observable_property_fields.applicable_kinds = field
+dotnet_naming_symbols.observable_property_fields.applicable_accessibilities = private
+dotnet_naming_symbols.observable_property_fields.required_modifiers = 
+
+dotnet_naming_style.camelcase.capitalization = camel_case
+dotnet_naming_style.camelcase.required_prefix = 
+dotnet_naming_style.camelcase.required_suffix = 
+
+# その他の private フィールドは通常通り _ プレフィックス
+dotnet_naming_rule.private_fields_should_be_underscore_prefixed.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_underscore_prefixed.symbols = other_private_fields
+dotnet_naming_rule.private_fields_should_be_underscore_prefixed.style = underscore_prefix
+
+dotnet_naming_symbols.other_private_fields.applicable_kinds = field
+dotnet_naming_symbols.other_private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.underscore_prefix.capitalization = camel_case
+dotnet_naming_style.underscore_prefix.required_prefix = _
+
+# XML project files
+[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2

@@ -24,7 +24,7 @@
         <!-- ファイル名入力行 -->
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,6">
             <Label Content="録画ファイル名" VerticalAlignment="Center" Width="90" Padding="2" />
-            <TextBox Text="{Binding Filename, UpdateSourceTrigger=PropertyChanged}" Width="330" Margin="0,0,2,0"
+            <TextBox x:Name="FilenameTextBox" Text="{Binding Filename, UpdateSourceTrigger=PropertyChanged}" Width="330" Margin="0,0,2,0"
                      VerticalContentAlignment="Center" />
             <Button Content="paste" Width="50" Margin="0,0,3,0"
                     Command="{Binding FilenamePasteCommand}" FontSize="{StaticResource NormalFontSize}" />
@@ -48,8 +48,8 @@
                     Command="{Binding Min120Command}" Padding="1" />
             <Button Content="180" Width="32" Margin="0,0,3,0"
                     Command="{Binding Min180Command}" Padding="1" />
-            <TextBox Text="{Binding MinUpDown, UpdateSourceTrigger=PropertyChanged}" Width="40" TextAlignment="Right" Margin="5,0,3,0"
-                     PreviewMouseWheel="NumericUpDown_MouseWheel" />
+            <TextBox x:Name="MinutesTextBox" Text="{Binding Minutes, UpdateSourceTrigger=PropertyChanged}" Width="40" TextAlignment="Right" Margin="5,0,3,0"
+                     PreviewMouseWheel="MinutesTextBox_MouseWheel" />
             <Label Content="分後" VerticalAlignment="Center" Margin="0,0,8,0" Padding="2" />
             <ToggleButton Content="録画停止予約" VerticalAlignment="Center"
                           FontSize="{StaticResource LargeFontSize}"
@@ -70,8 +70,8 @@
             <Button Content="on/off" Width="48" Margin="0,0,3,0"
                     Command="{Binding SoundOnCommand}" Padding="1" />
             <Label Content=" アラーム" VerticalAlignment="Center" Margin="3,0,2,0" Padding="2" />
-            <TextBox Text="{Binding AlarmUpDown, UpdateSourceTrigger=PropertyChanged}" Width="50" TextAlignment="Right" Margin="0,0,2,0"
-                     PreviewMouseWheel="NumericUpDown_MouseWheel" VerticalContentAlignment="Center" />
+            <TextBox x:Name="AlarmTextBox" Text="{Binding AlarmMinutes, UpdateSourceTrigger=PropertyChanged}" Width="50" TextAlignment="Right" Margin="0,0,2,0"
+                     PreviewMouseWheel="AlarmTextBox_MouseWheel" VerticalContentAlignment="Center" />
             <Label Content="分前" VerticalAlignment="Center" Padding="2" />
         </StackPanel>
 
