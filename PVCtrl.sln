@@ -27,6 +27,7 @@ Global
 		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|Any CPU.Build.0 = Remote|Any CPU
 		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|x64.ActiveCfg = Remote|x64
 		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Remote|x64.Build.0 = Remote|x64
+		{C11E5012-75B9-4C96-861A-02BB4F3EDE41}.Release|x64.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -54,10 +54,14 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private string windowTitle = "PvCtrl";
 
+    [ObservableProperty] private bool allowSleep;
+
+    private AwakeWhileProcessService? _awakeService;
+
 
     partial void OnStopReserveCheckedChanged(bool value)
     {
-        HandleStopReserveChanged();
+        HandleStopReserveChanged(value);
     }
 
     partial void OnClosePvReserveCheckedChanged(bool value)
@@ -65,6 +69,11 @@ public partial class MainViewModel : ObservableObject
         PvCtrlUtil.ClosePvReserve = value;
         var mode = value ? "セット" : "解除";
         ShowMessage($"PVクローズ予約を{mode}しました．");
+    }
+
+    partial void OnAllowSleepChanged(bool value)
+    {
+        UpdateAwakeService(value);
     }
 
     public void AdjustRecordMinutes(int delta)
@@ -75,6 +84,26 @@ public partial class MainViewModel : ObservableObject
     public void AdjustAlarmMinutes(int delta)
     {
         AlarmMinutes += delta;
+    }
+
+    private void UpdateAwakeService(bool shouldAllowSleep)
+    {
+        if (shouldAllowSleep)
+        {
+            _awakeService?.Dispose();
+            _awakeService = null;
+        }
+        else
+        {
+            InitializeAwakeService();
+        }
+    }
+
+    private void InitializeAwakeService()
+    {
+        _awakeService?.Dispose();
+        _awakeService = new AwakeWhileProcessService(["TMPGEncVMW6Batch"]);
+        _awakeService.Start();
     }
 
     [RelayCommand]
@@ -156,9 +185,9 @@ public partial class MainViewModel : ObservableObject
         InvokePvMenu(["設定", "モニタ時に音声を出力"], "音声 on/off を切り替えました．");
     }
 
-    private void HandleStopReserveChanged()
+    private void HandleStopReserveChanged(bool isChecked)
     {
-        if (StopReserveChecked)
+        if (isChecked)
         {
             var stopTime = DateTime.Now.AddMinutes(RecordMinutes);
             StopTimeLabel = stopTime.ToString("HH:mm:ss");
@@ -257,36 +286,6 @@ public partial class MainViewModel : ObservableObject
         SetMessage("Error: " + message);
     }
 
-    // ウィンドウクローズ時の処理
-    public void OnWindowClosing()
-    {
-        if (StopReserveChecked)
-        {
-            PvCtrlUtil.StopRecTimer(false);
-        }
-
-        // ウィンドウの位置・サイズを保存
-        try
-        {
-            var window = Application.Current.MainWindow;
-            if (window?.WindowState == WindowState.Normal)
-            {
-                Settings.Default.Bounds = new System.Drawing.Rectangle(
-                    (int)window.Left, (int)window.Top, (int)window.Width, (int)window.Height);
-            }
-
-            Settings.Default.WindowState = window?.WindowState == WindowState.Maximized
-                ? System.Windows.Forms.FormWindowState.Maximized
-                : System.Windows.Forms.FormWindowState.Normal;
-
-            Settings.Default.Save();
-        }
-        catch
-        {
-            // 設定保存エラーは無視
-        }
-    }
-
     // ウィンドウロード時の処理
     public void OnWindowLoaded()
     {
@@ -311,6 +310,40 @@ public partial class MainViewModel : ObservableObject
         catch
         {
             // 設定読み込みエラーは無視
+        }
+
+        UpdateAwakeService(AllowSleep);
+    }
+
+    // ウィンドウクローズ時の処理
+    public void OnWindowClosing()
+    {
+        if (StopReserveChecked)
+        {
+            PvCtrlUtil.StopRecTimer(false);
+        }
+
+        _awakeService?.Dispose();
+
+        // ウィンドウの位置・サイズを保存
+        try
+        {
+            var window = Application.Current.MainWindow;
+            if (window?.WindowState == WindowState.Normal)
+            {
+                Settings.Default.Bounds = new System.Drawing.Rectangle(
+                    (int)window.Left, (int)window.Top, (int)window.Width, (int)window.Height);
+            }
+
+            Settings.Default.WindowState = window?.WindowState == WindowState.Maximized
+                ? System.Windows.Forms.FormWindowState.Maximized
+                : System.Windows.Forms.FormWindowState.Normal;
+
+            Settings.Default.Save();
+        }
+        catch
+        {
+            // 設定保存エラーは無視
         }
     }
 }
