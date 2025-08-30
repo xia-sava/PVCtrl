@@ -94,9 +94,10 @@
                        FontSize="{StaticResource LargeFontSize}" Margin="0" Padding="0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Height="20" Margin="0,6,0,0">
-                <CheckBox Content="停止後にPVを閉じる" Margin="0"
-                          FontSize="{StaticResource NormalFontSize}"
-                          IsChecked="{Binding ClosePvReserveChecked}" />
+                <ToggleButton Content="停止後にPVを閉じる" Margin="0"
+                              FontSize="{StaticResource NormalFontSize}"
+                              Padding="6,0"
+                              IsChecked="{Binding ClosePvReserveChecked}" />
             </StackPanel>
         </StackPanel>
 
