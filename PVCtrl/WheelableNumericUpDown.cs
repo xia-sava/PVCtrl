@@ -8,8 +8,7 @@ public partial class WheelableNumericUpDown
 {
     protected override void OnMouseWheel(MouseEventArgs e)
     {
-        var hme = e as HandledMouseEventArgs;
-        if (hme != null)
+        if (e is HandledMouseEventArgs hme)
         {
             hme.Handled = true;
         }

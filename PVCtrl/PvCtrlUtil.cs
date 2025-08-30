@@ -21,7 +21,7 @@ static class PvCtrlUtil
 
     public static bool ClosePvReserve { set; get; }
 
-    public static Process? GetPvProcess()
+    private static Process? GetPvProcess()
     {
         return Process.GetProcesses()
             .FirstOrDefault(p => p.ProcessName == "PV");
@@ -53,7 +53,7 @@ static class PvCtrlUtil
     }
 
 
-    public static Process? GetExistsPv()
+    private static Process? GetExistsPv()
     {
         var process = GetPvProcess();
         process?.RestoreWindow();
@@ -80,7 +80,7 @@ static class PvCtrlUtil
             foreach (var filename in new[]
                      {
                          @"C:\Program Files\EARTH SOFT\PV\PV.exe",
-                         @"C:\Program Files (x86)\EARTH SOFT\PV\PV.exe",
+                         @"C:\Program Files (x86)\EARTH SOFT\PV\PV.exe"
                      }
                     )
             {
@@ -102,7 +102,7 @@ static class PvCtrlUtil
     }
 
 
-    public static bool ControlMenu(string[] menuItems)
+    public static void ControlMenu(string[] menuItems)
     {
         var pvProcess = GetExistsPv();
         if (pvProcess != null)
@@ -117,7 +117,7 @@ static class PvCtrlUtil
                     Thread.Sleep(100);
 
                     var current = menubar;
-                    foreach (var name in menuItems.Take(menuItems.Count() - 1))
+                    foreach (var name in menuItems.Take(menuItems.Length - 1))
                     {
                         var menuItem = GetAutomationElement(current, TreeScope.Descendants, ControlType.MenuItem,
                             name);
@@ -140,7 +140,7 @@ static class PvCtrlUtil
                         commandPattern?.Invoke();
                     }
 
-                    return true;
+                    return;
                 }
                 catch
                 {
@@ -149,8 +149,6 @@ static class PvCtrlUtil
                 }
             }
         }
-
-        return false;
     }
 
     public static void SetSubmitSaveAsDialog(string filename)
@@ -162,12 +160,12 @@ static class PvCtrlUtil
                 WindowPattern.WindowOpenedEvent,
                 AutomationElement.FromHandle(process.MainWindowHandle),
                 TreeScope.Children,
-                (sender, e) =>
+                (sender, _) =>
                 {
                     var element = (AutomationElement)sender;
                     if (element.Current.Name != "名前を付けて保存") return;
 
-                    var filenameBox = PvCtrlUtil.GetAutomationElement(element, TreeScope.Descendants,
+                    var filenameBox = GetAutomationElement(element, TreeScope.Descendants,
                         ControlType.Edit, "ファイル名:");
                     var filenameBoxValuePattern = (ValuePattern)filenameBox.GetCurrentPattern(ValuePattern.Pattern);
                     filenameBoxValuePattern.SetValue(filename);
@@ -197,11 +195,11 @@ static class PvCtrlUtil
     public static void StartRecTimer(int minutes, int alarmMinute, Action<DateTime> elapsedHandler,
         Action<bool> stopHandler)
     {
-        var alarmed = (alarmMinute == 0);
+        var alarmed = alarmMinute == 0;
         var stopTime = DateTime.Now.AddMinutes(minutes);
         _recStopHandler = stopHandler;
         _recTimer = new Timer(1000);
-        _recTimer.Elapsed += (sender, e) =>
+        _recTimer.Elapsed += (_, _) =>
         {
             elapsedHandler(stopTime);
             if (stopTime.AddMinutes(-alarmMinute) < DateTime.Now)
@@ -228,7 +226,7 @@ static class PvCtrlUtil
         _recStopHandler?.Invoke(recStop);
         if (recStop && ClosePvReserve)
         {
-            ControlMenu(new[] { "ファイル", "終了" });
+            ControlMenu(["ファイル", "終了"]);
         }
     }
 }

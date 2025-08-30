@@ -93,13 +93,13 @@ public partial class PvCtrl : Form
 
         PvCtrlUtil.SetSubmitSaveAsDialog(filename);
 
-        InvokePvMenu(new[] {"ファイル", "録画..."}, $"ファイル名「{filename}」で録画開始しました．");
+        InvokePvMenu(["ファイル", "録画..."], $"ファイル名「{filename}」で録画開始しました．");
         //this.InvokePVMenu(new[] { "ファイル", "開く", "ファイル..." });
     }
 
     private void StopButton_Click(object sender, EventArgs e)
     {
-        InvokePvMenu(new[] {"ファイル", "録画停止"}, "録画停止しました．");
+        InvokePvMenu(["ファイル", "録画停止"], "録画停止しました．");
         StopReserveCheckBox.Checked = false;
     }
 
@@ -141,7 +141,7 @@ public partial class PvCtrl : Form
 
     private void StopReserveCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (sender is CheckBox checkBox && checkBox.Checked)
+        if (sender is CheckBox { Checked: true })
         {
             var minUpDown = Math.Round(MinUpDown.Value);
             var alarmUpDown = Math.Round(AlarmUpDown.Value);
@@ -165,7 +165,7 @@ public partial class PvCtrl : Form
                         StopReserveCheckBox.Checked = false;
                         if (pvRecStop)
                         {
-                            InvokePvMenu(new[] {"ファイル", "録画停止"}, "予約により録画停止しました．");
+                            InvokePvMenu(["ファイル", "録画停止"], "予約により録画停止しました．");
                             Invoke((MethodInvoker) (() => Text = "PvCtrl"));
                         }
                     }));
@@ -187,17 +187,17 @@ public partial class PvCtrl : Form
 
     private void LineAButton_Click(object sender, EventArgs e)
     {
-        InvokePvMenu(new[] {"設定", "映像・音声入力端子", "A"}, "入力端子 A に切り替えました．");
+        InvokePvMenu(["設定", "映像・音声入力端子", "A"], "入力端子 A に切り替えました．");
     }
 
     private void LineBButton_Click(object sender, EventArgs e)
     {
-        InvokePvMenu(new[] {"設定", "映像・音声入力端子", "B"}, "入力端子 B に切り替えました．");
+        InvokePvMenu(["設定", "映像・音声入力端子", "B"], "入力端子 B に切り替えました．");
     }
 
     private void SoundOnButton_Click(object sender, EventArgs e)
     {
-        InvokePvMenu(new[] {"設定", "モニタ時に音声を出力"}, "音声 on/off を切り替えました．");
+        InvokePvMenu(["設定", "モニタ時に音声を出力"], "音声 on/off を切り替えました．");
     }
 
     private void PvCtrl_Load(object sender, EventArgs e)
