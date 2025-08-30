@@ -4,12 +4,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PVCtrl
 {
+    [SupportedOSPlatform("windows6.1")]
     public partial class WheelableNumericUpDown : NumericUpDown
     {
         protected override void OnMouseWheel(MouseEventArgs e)

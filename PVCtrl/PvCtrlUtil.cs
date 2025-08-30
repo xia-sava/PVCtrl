@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Automation;
@@ -12,6 +13,7 @@ using Timer = System.Timers.Timer;
 
 namespace PVCtrl
 {
+    [SupportedOSPlatform("windows6.1")]
     static class PvCtrlUtil
     {
         private static Timer _recTimer;

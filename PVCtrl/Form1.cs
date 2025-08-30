@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Media;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using PVCtrl.Properties;
 
 namespace PVCtrl
 {
+    [SupportedOSPlatform("windows6.1")]
     public partial class PvCtrl : Form
     {
         public PvCtrl()
