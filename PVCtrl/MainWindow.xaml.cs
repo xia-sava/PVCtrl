@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Media;
 using System.Runtime.Versioning;
@@ -10,7 +9,7 @@ using PVCtrl.Properties;
 namespace PVCtrl;
 
 [SupportedOSPlatform("windows6.1")]
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     public MainWindow()
     {
@@ -23,13 +22,13 @@ public partial class MainWindow : Window
         // NumericUpDown代替のTextBoxに数値のみ入力を許可
         MinUpDown.PreviewTextInput += NumericTextBox_PreviewTextInput;
         AlarmUpDown.PreviewTextInput += NumericTextBox_PreviewTextInput;
-        
+
         // 初期値設定
         MinUpDown.Text = "30";
         AlarmUpDown.Text = "2";
     }
 
-    private void NumericTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+    private static void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
     {
         // 数字のみ許可
         e.Handled = !IsNumeric(e.Text);
@@ -39,47 +38,41 @@ public partial class MainWindow : Window
 
     private void NumericUpDown_MouseWheel(object sender, MouseWheelEventArgs e)
     {
-        if (sender is TextBox textBox)
+        if (sender is not TextBox textBox) return;
+        if (!int.TryParse(textBox.Text, out var value)) return;
+
+        var newValue = e.Delta > 0 ? value + 1 : value - 1;
+
+        // 範囲チェック
+        if (textBox == MinUpDown)
         {
-            if (int.TryParse(textBox.Text, out int value))
-            {
-                int newValue = e.Delta > 0 ? value + 1 : value - 1;
-                
-                // 範囲チェック
-                if (textBox == MinUpDown)
-                {
-                    newValue = Math.Max(1, Math.Min(1440, newValue));
-                }
-                else if (textBox == AlarmUpDown)
-                {
-                    newValue = Math.Max(0, Math.Min(1440, newValue));
-                }
-                
-                textBox.Text = newValue.ToString();
-                e.Handled = true;
-            }
+            newValue = Math.Max(1, Math.Min(1440, newValue));
         }
+        else if (textBox == AlarmUpDown)
+        {
+            newValue = Math.Max(0, Math.Min(1440, newValue));
+        }
+
+        textBox.Text = newValue.ToString();
+        e.Handled = true;
     }
 
-    // Form1からの移植メソッド群
-    private bool InvokePvMenu(string[] menuItems, string message = "")
+    private void InvokePvMenu(string[] menuItems, string message = "")
     {
         try
         {
             PvCtrlUtil.ControlMenu(menuItems);
             ShowMessage(message);
-            return true;
         }
         catch (Exception)
         {
             ErrorMessage();
-            return false;
         }
     }
 
     private void SetMessage(string message)
     {
-        MessageTextBox.Text = $"{DateTime.Now:hh:mm:ss} {message}\r\n{MessageTextBox.Text}";
+        MessageTextBox.Text = $"{DateTime.Now:HH:mm:ss} {message}\r\n{MessageTextBox.Text}";
     }
 
     private void ShowMessage(string message)
@@ -103,12 +96,12 @@ public partial class MainWindow : Window
             NormalizeFilenameTextBox();
         }
     }
-    
+
     private void FilenameTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
         NormalizeFilenameTextBox();
     }
-    
+
     private void NormalizeFilenameTextBox()
     {
         FilenameTextBox.Text = FilenameTextBox.Text
@@ -136,14 +129,14 @@ public partial class MainWindow : Window
             filename = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             FilenameTextBox.Text = filename;
         }
-        
+
         PvCtrlUtil.SetSubmitSaveAsDialog(filename);
-        InvokePvMenu(new[] { "ファイル", "録画..." }, $"ファイル名「{filename}」で録画開始しました．");
+        InvokePvMenu(["ファイル", "録画..."], $"ファイル名「{filename}」で録画開始しました．");
     }
 
     private void StopButton_Click(object sender, RoutedEventArgs e)
     {
-        InvokePvMenu(new[] { "ファイル", "録画停止" }, "録画停止しました．");
+        InvokePvMenu(["ファイル", "録画停止"], "録画停止しました．");
         StopReserveCheckBox.IsChecked = false;
     }
 
@@ -162,75 +155,73 @@ public partial class MainWindow : Window
 
     private void InvokePVButton_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            PvCtrlUtil.InvokePv();
-            ShowMessage("PV を起動しました");
-        }
-        catch (Exception)
-        {
-            ErrorMessage("PV の起動に失敗しました");
-        }
+        PvCtrlUtil.InvokePv();
     }
 
     private void LineAButton_Click(object sender, RoutedEventArgs e)
     {
-        InvokePvMenu(new[] { "設定", "映像・音声入力端子", "A" }, "入力端子 A に切り替えました．");
+        InvokePvMenu(["設定", "映像・音声入力端子", "A"], "入力端子 A に切り替えました．");
     }
 
     private void LineBButton_Click(object sender, RoutedEventArgs e)
     {
-        InvokePvMenu(new[] { "設定", "映像・音声入力端子", "B" }, "入力端子 B に切り替えました．");
+        InvokePvMenu(["設定", "映像・音声入力端子", "B"], "入力端子 B に切り替えました．");
     }
 
     private void SoundOnButton_Click(object sender, RoutedEventArgs e)
     {
-        InvokePvMenu(new[] { "設定", "モニタ時に音声を出力" }, "音声 on/off を切り替えました．");
+        InvokePvMenu(["設定", "モニタ時に音声を出力"], "音声 on/off を切り替えました．");
     }
 
     private void StopReserveCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
     {
         if (StopReserveCheckBox.IsChecked == true)
         {
-            if (int.TryParse(MinUpDown.Text, out int minutes) && 
+            if (int.TryParse(MinUpDown.Text, out int minutes) &&
                 int.TryParse(AlarmUpDown.Text, out int alarmMinutes))
             {
                 var closePv = ClosePvReserveCheckBox.IsChecked == true;
-                
+
                 // タイマー開始時に時刻表示を更新
                 var stopTime = DateTime.Now.AddMinutes(minutes);
                 StopTimeLabel.Content = stopTime.ToString("HH:mm:ss");
-                
+
                 PvCtrlUtil.StartRecTimer(
                     minutes,
                     alarmMinutes,
-                    dt => {
+                    _ =>
+                    {
                         // 残り時間を更新
-                        var remaining = dt - DateTime.Now;
+                        var remaining = stopTime - DateTime.Now;
                         if (remaining.TotalSeconds > 0)
                         {
-                            var remainStr = $"{(int)remaining.TotalHours:00}:{remaining.Minutes:00}:{remaining.Seconds:00}";
-                            RemainedTimeLabel.Content = remainStr;
-                            // ウィンドウタイトルにも表示
-                            Title = $"PvCtrl - 録画停止予約 {remainStr}";
+                            var remainStr =
+                                $"{(int)remaining.TotalHours:00}:{remaining.Minutes:00}:{remaining.Seconds:00}";
+                            Dispatcher.Invoke(() =>
+                            {
+                                RemainedTimeLabel.Content = remainStr;
+                                // ウィンドウタイトルにも表示
+                                Title = $"PvCtrl - 録画停止予約 {remainStr}";
+                            });
                         }
                     },
-                    recStop => {
+                    recStop =>
+                    {
                         // 停止時の処理
-                        if (recStop)
+                        Dispatcher.Invoke(() =>
                         {
+                            if (!recStop) return;
+
                             StopTimeLabel.Content = "00:00:00";
                             RemainedTimeLabel.Content = "00:00:00";
                             StopReserveCheckBox.IsChecked = false;
                             Title = "PvCtrl";
-                            
-                            InvokePvMenu(new[] { "ファイル", "録画停止" }, "予約により録画停止しました．");
-                            
+                            InvokePvMenu(["ファイル", "録画停止"], "予約により録画停止しました．");
                             if (closePv)
                             {
                                 // PVを閉じる処理はPvCtrlUtilで処理される
                             }
-                        }
+                        });
                     }
                 );
                 ShowMessage($"{minutes}分後に録画停止予約を設定しました．");
@@ -252,14 +243,14 @@ public partial class MainWindow : Window
         var mode = ClosePvReserveCheckBox.IsChecked == true ? "セット" : "解除";
         ShowMessage($"PVクローズ予約を{mode}しました．");
     }
-    
+
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // ウィンドウの位置・サイズを復元
         try
         {
             var bounds = Settings.Default.Bounds;
-            if (bounds.Width > 0 && bounds.Height > 0)
+            if (bounds is { Width: > 0, Height: > 0 })
             {
                 Left = bounds.Left;
                 Top = bounds.Top;
@@ -275,17 +266,17 @@ public partial class MainWindow : Window
         {
             // 設定読み込みエラーは無視
         }
-        
+
         FilenameTextBox.Focus();
     }
-    
+
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         if (StopReserveCheckBox.IsChecked == true)
         {
             PvCtrlUtil.StopRecTimer(false);
         }
-        
+
         // ウィンドウの位置・サイズを保存
         try
         {
@@ -294,10 +285,10 @@ public partial class MainWindow : Window
                 Settings.Default.Bounds = new System.Drawing.Rectangle(
                     (int)Left, (int)Top, (int)Width, (int)Height);
             }
-            Settings.Default.WindowState = WindowState == WindowState.Maximized 
-                ? System.Windows.Forms.FormWindowState.Maximized 
+            Settings.Default.WindowState = WindowState == WindowState.Maximized
+                ? System.Windows.Forms.FormWindowState.Maximized
                 : System.Windows.Forms.FormWindowState.Normal;
-            
+
             Settings.Default.Save();
         }
         catch
