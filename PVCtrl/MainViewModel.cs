@@ -11,67 +11,48 @@ namespace PVCtrl;
 [SupportedOSPlatform("windows6.1")]
 public partial class MainViewModel : ObservableObject
 {
-    public const int MaxRecordingMinutes = 1440;  // 最大24時間
-    public const int MinRecordingMinutes = 1;
-    public const int MaxAlarmMinutes = 1440;
-    public const int MinAlarmMinutes = 0;
+    private const int MaxRecordingMinutes = 1440; // 最大24時間
+    private const int MinRecordingMinutes = 1;
+    private const int MaxAlarmMinutes = 1440;
+    private const int MinAlarmMinutes = 0;
 
-    [ObservableProperty]
-    private string filename = "";
+    [ObservableProperty] private string filename = "";
 
-    private string minutes = "30";
-    public string Minutes
+    private int recordMinutes = 30;
+
+    public int RecordMinutes
     {
-        get => minutes;
+        get => recordMinutes;
         set
         {
-            var normalized = NormalizeMinutes(value, MinRecordingMinutes, MaxRecordingMinutes, "30");
-            SetProperty(ref minutes, normalized);
+            var normalized = Math.Max(MinRecordingMinutes, Math.Min(MaxRecordingMinutes, value));
+            SetProperty(ref recordMinutes, normalized);
         }
     }
 
-    private string alarmMinutes = "2";
-    public string AlarmMinutes
+    private int alarmMinutes = 2;
+
+    public int AlarmMinutes
     {
         get => alarmMinutes;
         set
         {
-            var normalized = NormalizeMinutes(value, MinAlarmMinutes, MaxAlarmMinutes, "2");
+            var normalized = Math.Max(MinAlarmMinutes, Math.Min(MaxAlarmMinutes, value));
             SetProperty(ref alarmMinutes, normalized);
         }
     }
 
-    private static string NormalizeMinutes(string value, int min, int max, string defaultValue)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return defaultValue;
+    [ObservableProperty] private bool stopReserveChecked;
 
-        if (int.TryParse(value, out var numericValue))
-        {
-            var clamped = Math.Max(min, Math.Min(max, numericValue));
-            return clamped.ToString();
-        }
+    [ObservableProperty] private bool closePvReserveChecked;
 
-        return defaultValue;
-    }
+    [ObservableProperty] private string stopTimeLabel = "00:00:00";
 
-    [ObservableProperty]
-    private bool stopReserveChecked;
+    [ObservableProperty] private string remainedTimeLabel = "00:00:00";
 
-    [ObservableProperty]
-    private bool closePvReserveChecked;
+    [ObservableProperty] private string messageText = "";
 
-    [ObservableProperty]
-    private string stopTimeLabel = "00:00:00";
-
-    [ObservableProperty]
-    private string remainedTimeLabel = "00:00:00";
-
-    [ObservableProperty]
-    private string messageText = "";
-
-    [ObservableProperty]
-    private string windowTitle = "PvCtrl";
+    [ObservableProperty] private string windowTitle = "PvCtrl";
 
 
     partial void OnStopReserveCheckedChanged(bool value)
@@ -86,20 +67,14 @@ public partial class MainViewModel : ObservableObject
         ShowMessage($"PVクローズ予約を{mode}しました．");
     }
 
-    public void AdjustMinutes(int delta)
+    public void AdjustRecordMinutes(int delta)
     {
-        if (int.TryParse(Minutes, out var current))
-        {
-            Minutes = (current + delta).ToString();
-        }
+        RecordMinutes += delta;
     }
 
     public void AdjustAlarmMinutes(int delta)
     {
-        if (int.TryParse(AlarmMinutes, out var current))
-        {
-            AlarmMinutes = (current + delta).ToString();
-        }
+        AlarmMinutes += delta;
     }
 
     [RelayCommand]
@@ -134,27 +109,27 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Min25() => SetMinutesAndAlarm(25, 1);
+    private void Min25() => SetRecordAndAlarmMinutes(25, 1);
 
     [RelayCommand]
-    private void Min30() => SetMinutesAndAlarm(30, 2);
+    private void Min30() => SetRecordAndAlarmMinutes(30, 2);
 
     [RelayCommand]
-    private void Min60() => SetMinutesAndAlarm(60, 2);
+    private void Min60() => SetRecordAndAlarmMinutes(60, 2);
 
     [RelayCommand]
-    private void Min90() => SetMinutesAndAlarm(90, 2);
+    private void Min90() => SetRecordAndAlarmMinutes(90, 2);
 
     [RelayCommand]
-    private void Min120() => SetMinutesAndAlarm(120, 2);
+    private void Min120() => SetRecordAndAlarmMinutes(120, 2);
 
     [RelayCommand]
-    private void Min180() => SetMinutesAndAlarm(180, 2);
+    private void Min180() => SetRecordAndAlarmMinutes(180, 2);
 
-    private void SetMinutesAndAlarm(int minutesValue, int alarmValue)
+    private void SetRecordAndAlarmMinutes(int recordValue, int alarmValue)
     {
-        Minutes = minutesValue.ToString();
-        AlarmMinutes = alarmValue.ToString();
+        RecordMinutes = recordValue;
+        AlarmMinutes = alarmValue;
     }
 
     [RelayCommand]
@@ -185,28 +160,29 @@ public partial class MainViewModel : ObservableObject
     {
         if (StopReserveChecked)
         {
-            if (!int.TryParse(Minutes, out var minutesValue) ||
-                !int.TryParse(AlarmMinutes, out var alarmMinutesValue)) return;
-
-            var stopTime = DateTime.Now.AddMinutes(minutesValue);
+            var stopTime = DateTime.Now.AddMinutes(RecordMinutes);
             StopTimeLabel = stopTime.ToString("HH:mm:ss");
 
             PvCtrlUtil.StartRecTimer(
-                minutesValue,
-                alarmMinutesValue,
-                _ => {
+                RecordMinutes,
+                AlarmMinutes,
+                _ =>
+                {
                     var remaining = stopTime - DateTime.Now;
                     if (remaining.TotalSeconds > 0)
                     {
                         var remainStr = $"{(int)remaining.TotalHours:00}:{remaining.Minutes:00}:{remaining.Seconds:00}";
-                        Application.Current.Dispatcher.Invoke(() => {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
                             RemainedTimeLabel = remainStr;
                             WindowTitle = $"PvCtrl - 録画停止予約 {remainStr}";
                         });
                     }
                 },
-                recStop => {
-                    Application.Current.Dispatcher.Invoke(() => {
+                recStop =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
                         if (recStop)
                         {
                             StopTimeLabel = "00:00:00";
@@ -220,7 +196,7 @@ public partial class MainViewModel : ObservableObject
                     });
                 }
             );
-            ShowMessage($"{minutesValue}分後に録画停止予約を設定しました．");
+            ShowMessage($"{RecordMinutes}分後に録画停止予約を設定しました．");
         }
         else
         {
@@ -298,6 +274,7 @@ public partial class MainViewModel : ObservableObject
                 Settings.Default.Bounds = new System.Drawing.Rectangle(
                     (int)window.Left, (int)window.Top, (int)window.Width, (int)window.Height);
             }
+
             Settings.Default.WindowState = window?.WindowState == WindowState.Maximized
                 ? System.Windows.Forms.FormWindowState.Maximized
                 : System.Windows.Forms.FormWindowState.Normal;
@@ -325,6 +302,7 @@ public partial class MainViewModel : ObservableObject
                 window.Width = bounds.Width;
                 window.Height = bounds.Height;
             }
+
             if (Settings.Default.WindowState == System.Windows.Forms.FormWindowState.Maximized)
             {
                 window!.WindowState = WindowState.Maximized;

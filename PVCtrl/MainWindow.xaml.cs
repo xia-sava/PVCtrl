@@ -18,8 +18,8 @@ public partial class MainWindow
 
     private void SetupNumericTextBoxes()
     {
-        MinutesTextBox.PreviewTextInput += NumericTextBox_PreviewTextInput;
-        AlarmTextBox.PreviewTextInput += NumericTextBox_PreviewTextInput;
+        RecordMinutesTextBox.PreviewTextInput += NumericTextBox_PreviewTextInput;
+        AlarmMinutesTextBox.PreviewTextInput += NumericTextBox_PreviewTextInput;
     }
 
     private static void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -27,12 +27,12 @@ public partial class MainWindow
         e.Handled = !int.TryParse(e.Text, out _);
     }
 
-    private void MinutesTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
+    private void RecordMinutesTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
     {
-        HandleNumericMouseWheel(e, delta => ViewModel.AdjustMinutes(delta));
+        HandleNumericMouseWheel(e, delta => ViewModel.AdjustRecordMinutes(delta));
     }
 
-    private void AlarmTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
+    private void AlarmMinutesTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
     {
         HandleNumericMouseWheel(e, delta => ViewModel.AdjustAlarmMinutes(delta));
     }
