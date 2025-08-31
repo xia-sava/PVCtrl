@@ -15,7 +15,7 @@ PVCtrl は PV4（EARTH SOFT のビデオプレイヤー）を制御する Window
   - 録画開始・停止
   - タイマー設定
   - ファイル名管理
-  
+
 - **PvCtrlUtil.cs**: PV4 プロセス制御のユーティリティ
   - UI Automation による PV4 メニュー操作
   - プロセス管理（起動・終了・ウィンドウ状態制御）
@@ -50,7 +50,7 @@ dotnet build PVCtrl.sln
 
 ### ビルド構成
 - Debug: デバッグ用ビルド
-- Release: リリース用ビルド  
+- Release: リリース用ビルド
 - Remote: リモート環境用ビルド
 - x64/AnyCPU: プラットフォーム設定
 

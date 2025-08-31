@@ -94,7 +94,7 @@
                        FontSize="{StaticResource LargeFontSize}" Margin="0" Padding="0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Height="20" Margin="0,6,0,0">
-                <ToggleButton Content="スリープを許可する" Margin="0"
+                <ToggleButton Content="バッチ中スリープ許可" Margin="0"
                               FontSize="{StaticResource NormalFontSize}"
                               Padding="6,0"
                               IsChecked="{Binding AllowSleep}" />

@@ -56,7 +56,8 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool allowSleep;
 
-    private AwakeWhileProcessService? _awakeService;
+    private readonly AwakeWhileProcessService _awakeService =
+        new(["TMPGEncVMW6Batch", "xyzzy"], pollingIntervalMs: 1000);
 
 
     partial void OnStopReserveCheckedChanged(bool value)
@@ -74,10 +75,7 @@ public partial class MainViewModel : ObservableObject
         {
             PvCtrlUtil.OnPvClosed = () =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    ClosePvReserveChecked = false;
-                });
+                Application.Current.Dispatcher.Invoke(() => { ClosePvReserveChecked = false; });
             };
         }
         else
@@ -88,7 +86,8 @@ public partial class MainViewModel : ObservableObject
 
     partial void OnAllowSleepChanged(bool value)
     {
-        UpdateAwakeService(value);
+        ShowMessage("バッチ処理中スリープ可否設定を変更しました．");
+        _awakeService.SetAllowSleepOnBatch(value);
     }
 
     public void AdjustRecordMinutes(int delta)
@@ -100,27 +99,6 @@ public partial class MainViewModel : ObservableObject
     {
         AlarmMinutes += delta;
     }
-
-    private void UpdateAwakeService(bool shouldAllowSleep)
-    {
-        if (shouldAllowSleep)
-        {
-            _awakeService?.Dispose();
-            _awakeService = null;
-        }
-        else
-        {
-            InitializeAwakeService();
-        }
-    }
-
-    private void InitializeAwakeService()
-    {
-        _awakeService?.Dispose();
-        _awakeService = new AwakeWhileProcessService(["TMPGEncVMW6Batch"]);
-        _awakeService.Start();
-    }
-
 
     [RelayCommand]
     private void FilenamePaste()
@@ -328,7 +306,7 @@ public partial class MainViewModel : ObservableObject
             // 設定読み込みエラーは無視
         }
 
-        UpdateAwakeService(AllowSleep);
+        _awakeService.Start();
     }
 
     // ウィンドウクローズ時の処理
@@ -339,7 +317,7 @@ public partial class MainViewModel : ObservableObject
             PvCtrlUtil.StopRecTimer(false);
         }
 
-        _awakeService?.Dispose();
+        _awakeService.Dispose();
 
         // ウィンドウの位置・サイズを保存
         try
