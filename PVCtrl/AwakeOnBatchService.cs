@@ -28,7 +28,6 @@ public sealed class AwakeWhileProcessService(
         StringComparer.OrdinalIgnoreCase
     );
 
-    private bool _systemAwakeRegistered; // システムへの登録状態
     private bool _allowSleepOnBatch; // スリープ可ボタン
 
     public void Start()
@@ -46,7 +45,7 @@ public sealed class AwakeWhileProcessService(
     {
         _pollTimer.Stop();
         _pollTimer.Dispose();
-        SetSystemSleepable();
+        SetThreadExecutionState(ES_CONTINUOUS);
     }
 
     public void SetAllowSleepOnBatch(bool allowSleepOnBatch)
@@ -62,29 +61,9 @@ public sealed class AwakeWhileProcessService(
     private void UpdateAwakeState()
     {
         // 現在必要な状態 = プロセス動作中 AND NOT スリープ可
-        if (IsProcessRunning() && !_allowSleepOnBatch)
-        {
-            SetSystemAwake();
-        }
-        else
-        {
-            SetSystemSleepable();
-        }
-    }
-
-    private void SetSystemAwake()
-    {
-        if (_systemAwakeRegistered) return;
-
-        SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
-        _systemAwakeRegistered = true;
-    }
-
-    private void SetSystemSleepable()
-    {
-        if (!_systemAwakeRegistered) return;
-
-        SetThreadExecutionState(ES_CONTINUOUS);
-        _systemAwakeRegistered = false;
+        SetThreadExecutionState(
+            IsProcessRunning() && !_allowSleepOnBatch
+                ? ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
+                : ES_CONTINUOUS);
     }
 }

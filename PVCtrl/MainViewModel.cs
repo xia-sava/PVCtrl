@@ -57,7 +57,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool allowSleep;
 
     private readonly AwakeWhileProcessService _awakeService =
-        new(["TMPGEncVMW6Batch", "xyzzy"], pollingIntervalMs: 1000);
+        new(["TMPGEncVMW6Batch"], pollingIntervalMs: 30_000);
 
 
     partial void OnStopReserveCheckedChanged(bool value)
