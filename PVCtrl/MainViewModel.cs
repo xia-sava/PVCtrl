@@ -56,9 +56,7 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool allowSleep;
 
-    private readonly AwakeWhileProcessService _awakeService =
-        new(["TMPGEncVMW6Batch"], pollingIntervalMs: 30_000);
-
+    private readonly AwakeWhileProcessService _awakeService = new();
 
     partial void OnStopReserveCheckedChanged(bool value)
     {
@@ -306,6 +304,7 @@ public partial class MainViewModel : ObservableObject
             // 設定読み込みエラーは無視
         }
 
+        _awakeService.StatusChanged += SetMessage;
         _awakeService.Start();
     }
 
