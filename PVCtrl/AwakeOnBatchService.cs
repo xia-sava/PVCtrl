@@ -4,13 +4,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Windows.Automation;
+using System.Windows.Threading;
 
 namespace PVCtrl;
 
 [SupportedOSPlatform("windows6.1")]
-public sealed class AwakeWhileProcessService : IDisposable
+public sealed class AwakeOnBatchService : IDisposable
 {
-    private const int pollInterval = 10_000;
+    private const int pollInterval = 10;
 
     [DllImport("kernel32.dll")]
     private static extern uint SetThreadExecutionState(uint esFlags);
@@ -19,7 +20,7 @@ public sealed class AwakeWhileProcessService : IDisposable
     private const uint ES_SYSTEM_REQUIRED = 0x00000001;
     private const uint ES_DISPLAY_REQUIRED = 0x00000002;
 
-    private System.Timers.Timer _pollTimer = new(pollInterval);
+    private readonly DispatcherTimer _pollTimer = new() { Interval = TimeSpan.FromSeconds(pollInterval) };
 
     private bool _allowSleepOnBatch; // スリープ可ボタン
     private bool _lastEncodingState; // 前回のエンコード状態
@@ -28,19 +29,13 @@ public sealed class AwakeWhileProcessService : IDisposable
 
     public void Start()
     {
-        _pollTimer.Elapsed += (_, _) =>
-        {
-            UpdateAwakeState();
-            _pollTimer.Start();
-        };
-        _pollTimer.AutoReset = false;
+        _pollTimer.Tick += (_, _) => UpdateAwakeState();
         _pollTimer.Start();
     }
 
     public void Dispose()
     {
         _pollTimer.Stop();
-        _pollTimer.Dispose();
         SetThreadExecutionState(ES_CONTINUOUS);
     }
 
@@ -84,9 +79,10 @@ public sealed class AwakeWhileProcessService : IDisposable
         if (_lastEncodingState != isEncoding)
         {
             _lastEncodingState = isEncoding;
-            StatusChanged(isEncoding
-                ? "TMPGEncのエンコードキューを検出 - スリープ防止ON"
-                : "TMPGEncのエンコードキューが空になりました - スリープ防止OFF");
+            StatusChanged(
+                isEncoding
+                    ? "TMPGEncのエンコードキューを検出 - スリープ防止ON"
+                    : "TMPGEncのエンコードキューが空になりました - スリープ防止OFF");
         }
 
         // 現在必要な状態 = エンコード中 AND NOT スリープ可

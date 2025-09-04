@@ -56,7 +56,7 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool allowSleep;
 
-    private readonly AwakeWhileProcessService _awakeService = new();
+    private readonly AwakeOnBatchService _awakeService = new();
 
     partial void OnStopReserveCheckedChanged(bool value)
     {
