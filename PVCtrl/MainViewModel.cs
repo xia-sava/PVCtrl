@@ -54,7 +54,7 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private string windowTitle = "PvCtrl";
 
-    [ObservableProperty] private bool allowSleep;
+    [ObservableProperty] private bool isAwake;
 
     private readonly AwakeOnBatchService _awakeService = new();
 
@@ -80,12 +80,6 @@ public partial class MainViewModel : ObservableObject
         {
             PvCtrlUtil.OnPvClosed = null;
         }
-    }
-
-    partial void OnAllowSleepChanged(bool value)
-    {
-        ShowMessage("バッチ処理中スリープ可否設定を変更しました．");
-        _awakeService.SetAllowSleepOnBatch(value);
     }
 
     public void AdjustRecordMinutes(int delta)
@@ -304,7 +298,7 @@ public partial class MainViewModel : ObservableObject
             // 設定読み込みエラーは無視
         }
 
-        _awakeService.StatusChanged += SetMessage;
+        _awakeService.StatusChanged += awakeState => IsAwake = awakeState;
         _awakeService.Start();
     }
 

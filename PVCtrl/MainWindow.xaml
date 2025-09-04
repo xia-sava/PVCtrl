@@ -94,12 +94,23 @@
                        FontSize="{StaticResource LargeFontSize}" Margin="0" Padding="0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Height="20" Margin="0,6,0,0">
-                <ToggleButton Content="バッチ中スリープ許可" Margin="0"
-                              FontSize="{StaticResource NormalFontSize}"
-                              Padding="6,0"
-                              IsChecked="{Binding AllowSleep}" />
+                <Ellipse Width="12" Height="12" VerticalAlignment="Center"
+                         Stroke="Silver" StrokeThickness="1">
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Setter Property="Fill" Value="#EEEEEE" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAwake}" Value="True">
+                                    <Setter Property="Fill" Value="DarkGray" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+                <TextBlock Text="バッチ中スリープを抑止" Margin="5,0,0,0" VerticalAlignment="Center"
+                           FontSize="{StaticResource SmallFontSize}" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Height="20" Margin="0,6,0,0">
+            <StackPanel Orientation="Horizontal" Height="20" Margin="0,0,0,0">
                 <ToggleButton Content="停止後にPVを閉じる" Margin="0"
                               FontSize="{StaticResource NormalFontSize}"
                               Padding="6,0"

@@ -22,10 +22,8 @@ public sealed class AwakeOnBatchService : IDisposable
 
     private readonly DispatcherTimer _pollTimer = new() { Interval = TimeSpan.FromSeconds(pollInterval) };
 
-    private bool _allowSleepOnBatch; // スリープ可ボタン
-    private bool _lastEncodingState; // 前回のエンコード状態
-
-    public event Action<string> StatusChanged = _ => { }; // 状態変化通知（空のハンドラで初期化）
+    public event Action<bool> StatusChanged = _ => { }; // スリープ抑止状態変化通知
+    private bool _lastAwakeState;
 
     public void Start()
     {
@@ -37,11 +35,6 @@ public sealed class AwakeOnBatchService : IDisposable
     {
         _pollTimer.Stop();
         SetThreadExecutionState(ES_CONTINUOUS);
-    }
-
-    public void SetAllowSleepOnBatch(bool allowSleepOnBatch)
-    {
-        _allowSleepOnBatch = allowSleepOnBatch;
     }
 
     private bool IsEncoding()
@@ -73,21 +66,18 @@ public sealed class AwakeOnBatchService : IDisposable
 
     private void UpdateAwakeState()
     {
-        var isEncoding = IsEncoding();
+        // エンコード中であればスリープ抑止
+        var shouldAwake = IsEncoding();
 
-        // 状態変化を検出してメッセージ出力
-        if (_lastEncodingState != isEncoding)
+        // スリープ抑止状態を通知
+        if (_lastAwakeState != shouldAwake)
         {
-            _lastEncodingState = isEncoding;
-            StatusChanged(
-                isEncoding
-                    ? "TMPGEncのエンコードキューを検出 - スリープ防止ON"
-                    : "TMPGEncのエンコードキューが空になりました - スリープ防止OFF");
+            _lastAwakeState = shouldAwake;
+            StatusChanged(shouldAwake);
         }
 
-        // 現在必要な状態 = エンコード中 AND NOT スリープ可
         SetThreadExecutionState(
-            isEncoding && !_allowSleepOnBatch
+            shouldAwake
                 ? ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
                 : ES_CONTINUOUS);
     }
