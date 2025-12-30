@@ -53,7 +53,7 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private string messageText = "";
 
-    [ObservableProperty] private string windowTitle = "PvCtrl";
+    [ObservableProperty] private string windowTitle = "ObsCtrl";
 
     [ObservableProperty] private bool isAwake;
 
@@ -175,7 +175,7 @@ public partial class MainViewModel : ObservableObject
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             RemainedTimeLabel = remainStr;
-                            WindowTitle = $"PvCtrl - 録画停止予約 {remainStr}";
+                            WindowTitle = $"ObsCtrl - 録画停止予約 {remainStr}";
                         });
                     }
                 },
@@ -188,7 +188,7 @@ public partial class MainViewModel : ObservableObject
                             StopTimeLabel = "00:00:00";
                             RemainedTimeLabel = "00:00:00";
                             StopReserveChecked = false;
-                            WindowTitle = "PvCtrl";
+                            WindowTitle = "ObsCtrl";
 
                             _obsService.StopRecord();
                             ShowMessage("予約により録画停止しました．");
@@ -213,7 +213,7 @@ public partial class MainViewModel : ObservableObject
             RecTimerService.StopRecTimer(false);
             StopTimeLabel = "00:00:00";
             RemainedTimeLabel = "00:00:00";
-            WindowTitle = "PvCtrl";
+            WindowTitle = "ObsCtrl";
             ShowMessage("録画停止予約を解除しました．");
         }
     }
