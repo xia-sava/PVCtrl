@@ -1,5 +1,9 @@
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.Versioning;
+using System.Windows.Automation;
 using System.Windows.Threading;
 using OBSWebsocketDotNet;
 using OBSWebsocketDotNet.Communication;
@@ -12,6 +16,11 @@ public sealed class ObsService : IDisposable
     private const string DefaultUrl = "ws://localhost:4455";
     private const string DefaultPassword = "";
     private const int RetryIntervalSeconds = 10;
+
+    private static readonly string[] ObsExePaths =
+    [
+        @"C:\Program Files\obs-studio\bin\64bit\obs64.exe"
+    ];
 
     private readonly OBSWebsocket _obs = new();
     private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(RetryIntervalSeconds) };
@@ -50,6 +59,58 @@ public sealed class ObsService : IDisposable
     {
         if (!_obs.IsConnected) return;
         _obs.Disconnect();
+    }
+
+    /// <summary>
+    /// OBS の起動/ウィンドウ表示トグル
+    /// </summary>
+    public void InvokeObs()
+    {
+        var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
+        if (process != null)
+        {
+            ToggleWindowState(process);
+        }
+        else
+        {
+            LaunchObs();
+        }
+        Connect();
+    }
+
+    private static void ToggleWindowState(Process process)
+    {
+        try
+        {
+            var element = AutomationElement.FromHandle(process.MainWindowHandle);
+            var windowPattern = (WindowPattern)element.GetCurrentPattern(WindowPattern.Pattern);
+            var currentState = windowPattern.Current.WindowVisualState;
+            windowPattern.SetWindowVisualState(
+                currentState == WindowVisualState.Minimized
+                    ? WindowVisualState.Normal
+                    : WindowVisualState.Minimized);
+        }
+        catch
+        {
+            // ウィンドウ操作失敗は無視
+        }
+    }
+
+    private static void LaunchObs()
+    {
+        foreach (var path in ObsExePaths)
+        {
+            if (File.Exists(path))
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = path,
+                    WorkingDirectory = Path.GetDirectoryName(path)
+                };
+                Process.Start(startInfo);
+                return;
+            }
+        }
     }
 
     private void OnConnected(object? sender, EventArgs e)

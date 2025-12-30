@@ -61,8 +61,8 @@
 
         <!-- PV操作行 -->
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,6">
-            <Button Content="PV起動" Width="60" Margin="0,0,3,0"
-                    Command="{Binding InvokePvCommand}" Padding="1" />
+            <Button Content="OBS起動" Width="60" Margin="0,0,3,0"
+                    Command="{Binding InvokeObsCommand}" Padding="1" />
             <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="3,0,2,0"
                      Stroke="Silver" StrokeThickness="1">
                 <Ellipse.Style>

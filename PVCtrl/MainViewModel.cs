@@ -151,10 +151,9 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void InvokePv()
+    private void InvokeObs()
     {
-        PvCtrlUtil.InvokePv();
-        _obsService.Connect();
+        _obsService.InvokeObs();
     }
 
     [RelayCommand]
