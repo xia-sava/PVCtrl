@@ -56,7 +56,10 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool isAwake;
 
+    [ObservableProperty] private bool isObsConnected;
+
     private readonly AwakeOnBatchService _awakeService = new();
+    private readonly ObsService _obsService = new();
 
     partial void OnStopReserveCheckedChanged(bool value)
     {
@@ -151,6 +154,7 @@ public partial class MainViewModel : ObservableObject
     private void InvokePv()
     {
         PvCtrlUtil.InvokePv();
+        _obsService.Connect();
     }
 
     [RelayCommand]
@@ -300,6 +304,12 @@ public partial class MainViewModel : ObservableObject
 
         _awakeService.StatusChanged += awakeState => IsAwake = awakeState;
         _awakeService.Start();
+
+        _obsService.StatusChanged += connected =>
+        {
+            Application.Current.Dispatcher.Invoke(() => IsObsConnected = connected);
+        };
+        _obsService.Start();
     }
 
     // ウィンドウクローズ時の処理
@@ -311,6 +321,7 @@ public partial class MainViewModel : ObservableObject
         }
 
         _awakeService.Dispose();
+        _obsService.Dispose();
 
         // ウィンドウの位置・サイズを保存
         try

@@ -21,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.11" />
+    <PackageReference Include="obs-websocket-dotnet" Version="5.0.1" />
   </ItemGroup>
 
 

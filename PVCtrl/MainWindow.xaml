@@ -63,11 +63,21 @@
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,6">
             <Button Content="PV起動" Width="60" Margin="0,0,3,0"
                     Command="{Binding InvokePvCommand}" Padding="1" />
-            <Label Content="入力端子" VerticalAlignment="Center" Margin="3, 0, 2, 0" Padding="2" />
-            <Button Content="A" Width="23" Margin="0,0,3,0" Command="{Binding LineACommand}"
-                    Padding="1" />
-            <Button Content="B" Width="23" Margin="0,0,3,0" Command="{Binding LineBCommand}"
-                    Padding="1" />
+            <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="3,0,2,0"
+                     Stroke="Silver" StrokeThickness="1">
+                <Ellipse.Style>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="#EEEEEE" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsObsConnected}" Value="True">
+                                <Setter Property="Fill" Value="DarkGray" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
+            <TextBlock Text="OBS" VerticalAlignment="Center" Margin="2,0,3,0"
+                       FontSize="{StaticResource SmallFontSize}" />
             <Label Content=" 音声" VerticalAlignment="Center" Margin="3,0,3,0" Padding="2" />
             <Button Content="on/off" Width="48" Margin="0,0,3,0"
                     Command="{Binding SoundOnCommand}" Padding="1" />
