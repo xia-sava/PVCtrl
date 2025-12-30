@@ -59,7 +59,7 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool isObsConnected;
 
-    [ObservableProperty] private bool isObsAudioOn = true;
+    [ObservableProperty] private bool isObsAudioOn;
 
     private readonly AwakeOnBatchService _awakeService = new();
     private readonly ObsService _obsService = new();
