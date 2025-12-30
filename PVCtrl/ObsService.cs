@@ -62,6 +62,25 @@ public sealed class ObsService : IDisposable
     }
 
     /// <summary>
+    /// 録画ファイル名を設定して録画開始
+    /// </summary>
+    public void StartRecord(string filename)
+    {
+        if (!_obs.IsConnected) return;
+        _obs.SetProfileParameter("Output", "FilenameFormatting", filename);
+        _obs.StartRecord();
+    }
+
+    /// <summary>
+    /// 録画停止
+    /// </summary>
+    public string? StopRecord()
+    {
+        if (!_obs.IsConnected) return null;
+        return _obs.StopRecord();
+    }
+
+    /// <summary>
     /// OBS の起動/ウィンドウ表示トグル
     /// </summary>
     public void InvokeObs()

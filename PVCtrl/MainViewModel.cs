@@ -115,14 +115,15 @@ public partial class MainViewModel : ObservableObject
             Filename = recFilename;
         }
 
-        PvCtrlUtil.SetSubmitSaveAsDialog(recFilename);
-        InvokePvMenu(["ファイル", "録画..."], $"ファイル名「{recFilename}」で録画開始しました．");
+        _obsService.StartRecord(recFilename);
+        ShowMessage($"ファイル名「{recFilename}」で録画開始しました．");
     }
 
     [RelayCommand]
     private void Stop()
     {
-        InvokePvMenu(["ファイル", "録画停止"], "録画停止しました．");
+        _obsService.StopRecord();
+        ShowMessage("録画停止しました．");
         StopReserveChecked = false;
     }
 
