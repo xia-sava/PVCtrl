@@ -78,9 +78,9 @@
             </Ellipse>
             <TextBlock Text="OBS" VerticalAlignment="Center" Margin="2,0,3,0"
                        FontSize="{StaticResource SmallFontSize}" />
-            <Label Content=" 音声" VerticalAlignment="Center" Margin="3,0,3,0" Padding="2" />
-            <Button Content="on/off" Width="48" Margin="0,0,3,0"
-                    Command="{Binding SoundOnCommand}" Padding="1" />
+            <ToggleButton Content="音声" Width="40" Margin="3,0,3,0"
+                          Command="{Binding SoundOnCommand}"
+                          IsChecked="{Binding IsObsAudioOn, Mode=OneWay}" Padding="1" />
             <Label Content=" アラーム" VerticalAlignment="Center" Margin="3,0,2,0" Padding="2" />
             <TextBox x:Name="AlarmMinutesTextBox" Text="{Binding AlarmMinutes, UpdateSourceTrigger=PropertyChanged}"
                      Width="50" TextAlignment="Right" Margin="0,0,2,0"

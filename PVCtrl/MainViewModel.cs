@@ -1,6 +1,7 @@
 using System;
 using System.Media;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -57,6 +58,8 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool isAwake;
 
     [ObservableProperty] private bool isObsConnected;
+
+    [ObservableProperty] private bool isObsAudioOn = true;
 
     private readonly AwakeOnBatchService _awakeService = new();
     private readonly ObsService _obsService = new();
@@ -172,7 +175,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void SoundOn()
     {
-        InvokePvMenu(["設定", "モニタ時に音声を出力"], "音声 on/off を切り替えました．");
+        var muted = AudioMuteService.ToggleMute("obs64");
+        IsObsAudioOn = !muted;
+        var state = muted ? "ミュート" : "ミュート解除";
+        ShowMessage($"OBS 音声を{state}しました．");
     }
 
     private void HandleStopReserveChanged(bool isChecked)
@@ -209,9 +215,19 @@ public partial class MainViewModel : ObservableObject
                             StopReserveChecked = false;
                             WindowTitle = "PvCtrl";
 
-                            InvokePvMenu(["ファイル", "録画停止"], "予約により録画停止しました．");
+                            _obsService.StopRecord();
+                            ShowMessage("予約により録画停止しました．");
+
+                            if (ClosePvReserveChecked)
+                            {
+                                ClosePvReserveChecked = false;
+                                Task.Run(async () =>
+                                {
+                                    await Task.Delay(3000);
+                                    _obsService.CloseObs();
+                                });
+                            }
                         }
-                        // PVを閉じる処理はPvCtrlUtilで処理される
                     });
                 }
             );
@@ -307,7 +323,15 @@ public partial class MainViewModel : ObservableObject
 
         _obsService.StatusChanged += connected =>
         {
-            Application.Current.Dispatcher.Invoke(() => IsObsConnected = connected);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsObsConnected = connected;
+                if (connected)
+                {
+                    var muted = AudioMuteService.GetMuteState("obs64");
+                    IsObsAudioOn = muted != true;
+                }
+            });
         };
         _obsService.Start();
     }

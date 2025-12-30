@@ -97,6 +97,15 @@ public sealed class ObsService : IDisposable
         Connect();
     }
 
+    /// <summary>
+    /// OBS を終了
+    /// </summary>
+    public void CloseObs()
+    {
+        var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
+        process?.CloseMainWindow();
+    }
+
     private static void ToggleWindowState(Process process)
     {
         try
