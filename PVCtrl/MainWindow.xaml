@@ -59,7 +59,7 @@
                           IsChecked="{Binding StopReserveChecked}" />
         </StackPanel>
 
-        <!-- PV操作行 -->
+        <!-- OBS操作行 -->
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,6">
             <Button Content="OBS起動" Width="60" Margin="0,0,3,0"
                     Command="{Binding InvokeObsCommand}" Padding="1" />
@@ -121,7 +121,7 @@
                            FontSize="{StaticResource SmallFontSize}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Height="20" Margin="0,0,0,0">
-                <ToggleButton Content="停止後にPVを閉じる" Margin="0"
+                <ToggleButton Content="停止後にOBSを閉じる" Margin="0"
                               FontSize="{StaticResource NormalFontSize}"
                               Padding="6,0"
                               IsChecked="{Binding ClosePvReserveChecked}" />

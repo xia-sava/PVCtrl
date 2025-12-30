@@ -71,21 +71,8 @@ public partial class MainViewModel : ObservableObject
 
     partial void OnClosePvReserveCheckedChanged(bool value)
     {
-        PvCtrlUtil.ClosePvReserve = value;
         var mode = value ? "セット" : "解除";
-        ShowMessage($"PVクローズ予約を{mode}しました．");
-
-        if (value)
-        {
-            PvCtrlUtil.OnPvClosed = () =>
-            {
-                Application.Current.Dispatcher.Invoke(() => { ClosePvReserveChecked = false; });
-            };
-        }
-        else
-        {
-            PvCtrlUtil.OnPvClosed = null;
-        }
+        ShowMessage($"OBSクローズ予約を{mode}しました．");
     }
 
     public void AdjustRecordMinutes(int delta)
@@ -161,18 +148,6 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void LineA()
-    {
-        InvokePvMenu(["設定", "映像・音声入力端子", "A"], "入力端子 A に切り替えました．");
-    }
-
-    [RelayCommand]
-    private void LineB()
-    {
-        InvokePvMenu(["設定", "映像・音声入力端子", "B"], "入力端子 B に切り替えました．");
-    }
-
-    [RelayCommand]
     private void SoundOn()
     {
         var muted = AudioMuteService.ToggleMute("obs64");
@@ -188,7 +163,7 @@ public partial class MainViewModel : ObservableObject
             var stopTime = DateTime.Now.AddMinutes(RecordMinutes);
             StopTimeLabel = stopTime.ToString("HH:mm:ss");
 
-            PvCtrlUtil.StartRecTimer(
+            RecTimerService.StartRecTimer(
                 RecordMinutes,
                 AlarmMinutes,
                 _ =>
@@ -235,7 +210,7 @@ public partial class MainViewModel : ObservableObject
         }
         else
         {
-            PvCtrlUtil.StopRecTimer(false);
+            RecTimerService.StopRecTimer(false);
             StopTimeLabel = "00:00:00";
             RemainedTimeLabel = "00:00:00";
             WindowTitle = "PvCtrl";
@@ -260,19 +235,6 @@ public partial class MainViewModel : ObservableObject
             .Replace('　', ' ')
             .Replace("\n", "")
             .Replace("\r", "");
-    }
-
-    private void InvokePvMenu(string[] menuItems, string message = "")
-    {
-        try
-        {
-            PvCtrlUtil.ControlMenu(menuItems);
-            ShowMessage(message);
-        }
-        catch (Exception)
-        {
-            ErrorMessage();
-        }
     }
 
     private void SetMessage(string message)
@@ -341,7 +303,7 @@ public partial class MainViewModel : ObservableObject
     {
         if (StopReserveChecked)
         {
-            PvCtrlUtil.StopRecTimer(false);
+            RecTimerService.StopRecTimer(false);
         }
 
         _awakeService.Dispose();
