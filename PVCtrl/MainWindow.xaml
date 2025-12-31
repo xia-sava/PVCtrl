@@ -63,6 +63,19 @@
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,6">
             <Button Content="OBS起動" Width="60" Margin="0,0,3,0"
                     Command="{Binding InvokeObsCommand}" Padding="1" />
+            <Button Content="モニター表示" Width="75" Margin="0,0,3,0"
+                    Command="{Binding OpenMonitorCommand}" Padding="1"
+                    IsEnabled="{Binding IsObsConnected}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="3,0,2,0"
                      Stroke="Silver" StrokeThickness="1">
                 <Ellipse.Style>

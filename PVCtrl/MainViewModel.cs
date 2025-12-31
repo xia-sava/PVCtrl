@@ -148,6 +148,26 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void OpenMonitor()
+    {
+        if (_obsService.OpenSourceProjector())
+        {
+            // 音声をオンにする
+            var muted = AudioMuteService.GetMuteState("obs64");
+            if (muted == true)
+            {
+                AudioMuteService.ToggleMute("obs64");
+            }
+            IsObsAudioOn = true;
+            ShowMessage("ソースプロジェクターを表示しました．");
+        }
+        else
+        {
+            SetMessage("ソースプロジェクターの表示に失敗しました．");
+        }
+    }
+
+    [RelayCommand]
     private void SoundOn()
     {
         var muted = AudioMuteService.ToggleMute("obs64");

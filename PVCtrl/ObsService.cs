@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows.Automation;
 using System.Windows.Threading;
+using Newtonsoft.Json.Linq;
 using OBSWebsocketDotNet;
 using OBSWebsocketDotNet.Communication;
 
@@ -83,18 +85,21 @@ public sealed class ObsService : IDisposable
     /// <summary>
     /// OBS の起動/ウィンドウ表示トグル
     /// </summary>
-    public void InvokeObs()
+    public async void InvokeObs()
     {
         var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
         if (process != null)
         {
             ToggleWindowState(process);
+            Connect();
         }
         else
         {
             LaunchObs();
+            // OBS の WebSocket サーバー起動を待ってから接続
+            await Task.Delay(1500);
+            Connect();
         }
-        Connect();
     }
 
     /// <summary>
@@ -104,6 +109,36 @@ public sealed class ObsService : IDisposable
     {
         var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
         process?.CloseMainWindow();
+    }
+
+    /// <summary>
+    /// 現在のシーンの先頭ソースをプロジェクター表示
+    /// </summary>
+    public bool OpenSourceProjector()
+    {
+        if (!_obs.IsConnected) return false;
+        try
+        {
+            var currentScene = _obs.GetCurrentProgramScene();
+            var sceneItems = _obs.GetSceneItemList(currentScene);
+            if (sceneItems.Count == 0) return false;
+
+            var sourceName = sceneItems[0].SourceName;
+            // Qt geometry: (2, 28, 961, 568) - DPI 200% 環境用
+            const string geometry =
+                "AdnQywADAAAAAAACAAAAHAAAA8EAAAI4AAAAAgAAABwAAAPBAAACOAAAAAAAAAAAB4AAAAACAAAAHAAAA8EAAAI4";
+
+            _obs.SendRequest("OpenSourceProjector", new JObject
+            {
+                ["sourceName"] = sourceName,
+                ["projectorGeometry"] = geometry
+            });
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static void ToggleWindowState(Process process)
