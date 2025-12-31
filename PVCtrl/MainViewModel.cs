@@ -153,6 +153,15 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ToggleObs()
+    {
+        if (IsObsConnected)
+            _obsService.CloseObs();
+        else
+            ObsService.LaunchObs();
+    }
+
+    [RelayCommand]
     private void SoundOn()
     {
         var muted = AudioMuteService.ToggleMute("obs64");

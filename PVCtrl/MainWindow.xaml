@@ -74,6 +74,19 @@
                     </Style>
                 </Button.Style>
             </Button>
+            <Button Width="60" Margin="0,0,3,0"
+                    Command="{Binding ToggleObsCommand}" Padding="1">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Content" Value="OBS起動" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsObsConnected}" Value="True">
+                                <Setter Property="Content" Value="OBS終了" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="3,0,2,0"
                      Stroke="Silver" StrokeThickness="1">
                 <Ellipse.Style>

@@ -198,7 +198,10 @@ public sealed class ObsService : IDisposable
         }
     }
 
-    private static void LaunchObs()
+    /// <summary>
+    /// OBS を起動（トレイに最小化）
+    /// </summary>
+    public static void LaunchObs()
     {
         foreach (var path in ObsExePaths)
         {
@@ -214,6 +217,20 @@ public sealed class ObsService : IDisposable
                 return;
             }
         }
+    }
+
+    /// <summary>
+    /// OBS を終了
+    /// </summary>
+    public void CloseObs()
+    {
+        if (!_obs.IsConnected) return;
+        _obs.CallVendorRequest("shutdown-plugin", "shutdown", new JObject
+        {
+            ["reason"] = "User requested shutdown from ObsCtrl",
+            ["support_url"] = "https://github.com/xia-sava/PVCtrl",
+            ["force"] = true
+        });
     }
 
     private static async Task<bool> RetryUntilAsync(
