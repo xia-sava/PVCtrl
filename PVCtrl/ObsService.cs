@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using System.Windows.Automation;
 using System.Windows.Threading;
 using Newtonsoft.Json.Linq;
 using OBSWebsocketDotNet;
@@ -15,6 +15,25 @@ namespace PVCtrl;
 [SupportedOSPlatform("windows6.1")]
 public sealed class ObsService : IDisposable
 {
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    private static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [DllImport("user32.dll")]
+    private static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+    private const uint WM_CLOSE = 0x0010;
+
+    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
     private const string DefaultUrl = "ws://localhost:4455";
     private const string DefaultPassword = "";
     private const int RetryIntervalSeconds = 10;
@@ -28,8 +47,10 @@ public sealed class ObsService : IDisposable
     private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(RetryIntervalSeconds) };
 
     public bool IsConnected => _obs.IsConnected;
+    public bool IsProjectorOpen { get; private set; }
 
     public event Action<bool>? StatusChanged;
+    public event Action<bool>? ProjectorStatusChanged;
 
     public ObsService()
     {
@@ -83,32 +104,68 @@ public sealed class ObsService : IDisposable
     }
 
     /// <summary>
-    /// OBS の起動/ウィンドウ表示トグル
+    /// OBS を起動し、プロジェクターを表示
     /// </summary>
-    public async void InvokeObs()
+    public async void StartObsWithProjector()
     {
         var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
-        if (process != null)
-        {
-            ToggleWindowState(process);
-            Connect();
-        }
-        else
-        {
+        if (process == null)
             LaunchObs();
-            // OBS の WebSocket サーバー起動を待ってから接続
-            await Task.Delay(1500);
-            Connect();
-        }
+
+        if (!await RetryUntilAsync(() => _obs.IsConnected, onRetry: Connect))
+            return;
+
+        OpenSourceProjector();
+        await RetryUntilAsync(BringProjectorToFront);
+        IsProjectorOpen = true;
+        ProjectorStatusChanged?.Invoke(true);
     }
 
     /// <summary>
-    /// OBS を終了
+    /// プロジェクターウィンドウを前面に
     /// </summary>
-    public void CloseObs()
+    private static bool BringProjectorToFront()
     {
-        var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
-        process?.CloseMainWindow();
+        return FindProjectorWindow(hWnd => SetForegroundWindow(hWnd));
+    }
+
+    /// <summary>
+    /// プロジェクターを閉じる
+    /// </summary>
+    public void CloseProjector()
+    {
+        FindProjectorWindow(hWnd => PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero));
+        IsProjectorOpen = false;
+        ProjectorStatusChanged?.Invoke(false);
+    }
+
+    /// <summary>
+    /// プロジェクターウィンドウを探してアクションを実行
+    /// </summary>
+    private static bool FindProjectorWindow(Action<IntPtr> action)
+    {
+        var obsProcess = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
+        if (obsProcess == null) return false;
+
+        var found = false;
+        var processId = (uint)obsProcess.Id;
+        EnumWindows((hWnd, _) =>
+        {
+            GetWindowThreadProcessId(hWnd, out var windowProcessId);
+            if (windowProcessId != processId) return true;
+
+            var sb = new System.Text.StringBuilder(256);
+            GetWindowText(hWnd, sb, sb.Capacity);
+            if (sb.ToString().Contains("プロジェクター"))
+            {
+                action(hWnd);
+                found = true;
+                return false;
+            }
+
+            return true;
+        }, IntPtr.Zero);
+        return found;
     }
 
     /// <summary>
@@ -141,24 +198,6 @@ public sealed class ObsService : IDisposable
         }
     }
 
-    private static void ToggleWindowState(Process process)
-    {
-        try
-        {
-            var element = AutomationElement.FromHandle(process.MainWindowHandle);
-            var windowPattern = (WindowPattern)element.GetCurrentPattern(WindowPattern.Pattern);
-            var currentState = windowPattern.Current.WindowVisualState;
-            windowPattern.SetWindowVisualState(
-                currentState == WindowVisualState.Minimized
-                    ? WindowVisualState.Normal
-                    : WindowVisualState.Minimized);
-        }
-        catch
-        {
-            // ウィンドウ操作失敗は無視
-        }
-    }
-
     private static void LaunchObs()
     {
         foreach (var path in ObsExePaths)
@@ -168,12 +207,28 @@ public sealed class ObsService : IDisposable
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = path,
+                    Arguments = "--minimize-to-tray",
                     WorkingDirectory = Path.GetDirectoryName(path)
                 };
                 Process.Start(startInfo);
                 return;
             }
         }
+    }
+
+    private static async Task<bool> RetryUntilAsync(
+        Func<bool> condition,
+        int maxRetries = 32,
+        int delayMs = 100,
+        Action? onRetry = null)
+    {
+        for (var i = 0; i < maxRetries && !condition(); i++)
+        {
+            await Task.Delay(delayMs);
+            onRetry?.Invoke();
+        }
+
+        return condition();
     }
 
     private void OnConnected(object? sender, EventArgs e)

@@ -61,6 +61,8 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool isObsAudioOn;
 
+    [ObservableProperty] private bool isProjectorOpen;
+
     private readonly AwakeOnBatchService _awakeService = new();
     private readonly ObsService _obsService = new();
 
@@ -142,29 +144,12 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void InvokeObs()
+    private void ToggleMonitor()
     {
-        _obsService.InvokeObs();
-    }
-
-    [RelayCommand]
-    private void OpenMonitor()
-    {
-        if (_obsService.OpenSourceProjector())
-        {
-            // 音声をオンにする
-            var muted = AudioMuteService.GetMuteState("obs64");
-            if (muted == true)
-            {
-                AudioMuteService.ToggleMute("obs64");
-            }
-            IsObsAudioOn = true;
-            ShowMessage("ソースプロジェクターを表示しました．");
-        }
+        if (IsProjectorOpen)
+            _obsService.CloseProjector();
         else
-        {
-            SetMessage("ソースプロジェクターの表示に失敗しました．");
-        }
+            _obsService.StartObsWithProjector();
     }
 
     [RelayCommand]
@@ -216,11 +201,7 @@ public partial class MainViewModel : ObservableObject
                             if (ClosePvReserveChecked)
                             {
                                 ClosePvReserveChecked = false;
-                                Task.Run(async () =>
-                                {
-                                    await Task.Delay(3000);
-                                    _obsService.CloseObs();
-                                });
+                                _obsService.CloseProjector();
                             }
                         }
                     });
@@ -314,6 +295,10 @@ public partial class MainViewModel : ObservableObject
                     IsObsAudioOn = muted != true;
                 }
             });
+        };
+        _obsService.ProjectorStatusChanged += open =>
+        {
+            Application.Current.Dispatcher.Invoke(() => IsProjectorOpen = open);
         };
         _obsService.Start();
     }

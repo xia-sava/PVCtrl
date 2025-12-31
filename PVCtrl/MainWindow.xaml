@@ -61,17 +61,15 @@
 
         <!-- OBS操作行 -->
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,6">
-            <Button Content="OBS起動" Width="60" Margin="0,0,3,0"
-                    Command="{Binding InvokeObsCommand}" Padding="1" />
-            <Button Content="モニター表示" Width="75" Margin="0,0,3,0"
-                    Command="{Binding OpenMonitorCommand}" Padding="1"
-                    IsEnabled="{Binding IsObsConnected}">
+            <Button Width="80" Margin="0,0,3,0"
+                    Command="{Binding ToggleMonitorCommand}" Padding="1">
                 <Button.Style>
                     <Style TargetType="Button">
+                        <Setter Property="Content" Value="モニター表示" />
                         <Style.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.4" />
-                            </Trigger>
+                            <DataTrigger Binding="{Binding IsProjectorOpen}" Value="True">
+                                <Setter Property="Content" Value="モニター終了" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
