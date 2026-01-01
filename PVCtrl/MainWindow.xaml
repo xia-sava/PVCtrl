@@ -29,10 +29,35 @@
                      VerticalContentAlignment="Center" />
             <Button Content="paste" Width="50" Margin="0,0,3,0"
                     Command="{Binding FilenamePasteCommand}" FontSize="{StaticResource NormalFontSize}" />
-            <Button Content="●" Width="22" Foreground="Red" FontWeight="Bold"
-                    Margin="3,0,3,0" Command="{Binding RecCommand}" />
-            <Button Content="■" Width="22" Foreground="Blue" FontWeight="Bold"
-                    Command="{Binding StopCommand}" />
+            <ToggleButton Width="50" Margin="3,0,0,0"
+                          Command="{Binding ToggleRecordCommand}"
+                          IsChecked="{Binding IsRecording, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="Red" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRecording}" Value="True">
+                                        <Setter Property="Foreground" Value="Gray" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>●</TextBlock>
+                    <TextBlock Text="|" Margin="2,0" />
+                    <TextBlock FontWeight="Bold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="Gray" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRecording}" Value="True">
+                                        <Setter Property="Foreground" Value="Blue" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>■</TextBlock>
+                </StackPanel>
+            </ToggleButton>
         </StackPanel>
 
         <!-- 時間設定行 -->

@@ -63,6 +63,8 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool isProjectorOpen;
 
+    [ObservableProperty] private bool isRecording;
+
     private readonly AwakeOnBatchService _awakeService = new();
     private readonly ObsService _obsService = new();
 
@@ -98,25 +100,28 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Rec()
+    private void ToggleRecord()
     {
-        var recFilename = Filename.Trim();
-        if (string.IsNullOrEmpty(recFilename))
+        if (IsRecording)
         {
-            recFilename = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            Filename = recFilename;
+            _obsService.StopRecord();
+            IsRecording = false;
+            ShowMessage("録画停止しました．");
+            StopReserveChecked = false;
         }
+        else
+        {
+            var recFilename = Filename.Trim();
+            if (string.IsNullOrEmpty(recFilename))
+            {
+                recFilename = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+                Filename = recFilename;
+            }
 
-        _obsService.StartRecord(recFilename);
-        ShowMessage($"ファイル名「{recFilename}」で録画開始しました．");
-    }
-
-    [RelayCommand]
-    private void Stop()
-    {
-        _obsService.StopRecord();
-        ShowMessage("録画停止しました．");
-        StopReserveChecked = false;
+            _obsService.StartRecord(recFilename);
+            IsRecording = true;
+            ShowMessage($"ファイル名「{recFilename}」で録画開始しました．");
+        }
     }
 
     [RelayCommand]
@@ -205,6 +210,7 @@ public partial class MainViewModel : ObservableObject
                             WindowTitle = "ObsCtrl";
 
                             _obsService.StopRecord();
+                            IsRecording = false;
                             ShowMessage("予約により録画停止しました．");
 
                             if (ClosePvReserveChecked)

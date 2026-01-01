@@ -100,7 +100,14 @@ public sealed class ObsService : IDisposable
     public string? StopRecord()
     {
         if (!_obs.IsConnected) return null;
-        return _obs.StopRecord();
+        try
+        {
+            return _obs.StopRecord();
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     /// <summary>
