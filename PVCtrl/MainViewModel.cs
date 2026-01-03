@@ -152,18 +152,9 @@ public partial class MainViewModel : ObservableObject
     private void ToggleMonitor()
     {
         if (IsProjectorOpen)
-            _obsService.CloseProjector();
-        else
-            _obsService.StartObsWithProjector();
-    }
-
-    [RelayCommand]
-    private void ToggleObs()
-    {
-        if (IsObsConnected)
             _obsService.CloseObs();
         else
-            ObsService.LaunchObs();
+            _obsService.StartObsWithProjector();
     }
 
     [RelayCommand]

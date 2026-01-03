@@ -208,7 +208,7 @@ public sealed class ObsService : IDisposable
     /// <summary>
     /// OBS を起動（トレイに最小化）
     /// </summary>
-    public static void LaunchObs()
+    private static void LaunchObs()
     {
         foreach (var path in ObsExePaths)
         {
@@ -238,6 +238,8 @@ public sealed class ObsService : IDisposable
             ["support_url"] = "https://github.com/xia-sava/PVCtrl",
             ["force"] = true
         });
+        IsProjectorOpen = false;
+        ProjectorStatusChanged?.Invoke(false);
     }
 
     private static async Task<bool> RetryUntilAsync(
