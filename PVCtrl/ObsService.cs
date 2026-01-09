@@ -128,7 +128,7 @@ public sealed class ObsService : IDisposable
         if (process == null)
             LaunchObs();
 
-        if (!await RetryUntilAsync(() => _obs.IsConnected, onRetry: Connect))
+        if (!await RetryUntilAsync(() => _obs.IsConnected, maxRetries: 60, delayMs: 500, onRetry: Connect))
             return;
 
         OpenSourceProjector();
