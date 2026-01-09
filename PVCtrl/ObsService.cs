@@ -56,7 +56,16 @@ public sealed class ObsService : IDisposable
     {
         _obs.Connected += OnConnected;
         _obs.Disconnected += OnDisconnected;
-        _retryTimer.Tick += (_, _) => Connect();
+        _retryTimer.Tick += (_, _) => OnTimerTick();
+    }
+
+    private void OnTimerTick()
+    {
+        Connect();
+        if (IsProjectorOpen && !FindProjectorWindow(_ => { }))
+        {
+            CloseObs();
+        }
     }
 
     public void Start()
