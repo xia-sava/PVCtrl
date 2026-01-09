@@ -131,7 +131,7 @@ public sealed class ObsService : IDisposable
     /// <summary>
     /// プロジェクターウィンドウを前面に
     /// </summary>
-    private static bool BringProjectorToFront()
+    public static bool BringProjectorToFront()
     {
         return FindProjectorWindow(hWnd => SetForegroundWindow(hWnd));
     }

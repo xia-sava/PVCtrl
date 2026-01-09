@@ -120,6 +120,7 @@ public partial class MainViewModel : ObservableObject
 
             _obsService.StartRecord(recFilename);
             IsRecording = true;
+            ObsService.BringProjectorToFront();
             ShowMessage($"ファイル名「{recFilename}」で録画開始しました．");
         }
     }
