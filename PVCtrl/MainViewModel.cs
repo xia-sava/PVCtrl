@@ -104,6 +104,7 @@ public partial class MainViewModel : ObservableObject
     {
         if (IsRecording)
         {
+            ObsService.BringProjectorToFront();
             _obsService.StopRecord();
             IsRecording = false;
             ShowMessage("録画停止しました．");
@@ -161,6 +162,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void SoundOn()
     {
+        ObsService.BringProjectorToFront();
         var muted = AudioMuteService.ToggleMute("obs64");
         IsObsAudioOn = !muted;
         var state = muted ? "ミュート" : "ミュート解除";
