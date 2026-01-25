@@ -208,7 +208,7 @@ public partial class MainViewModel : ObservableObject
                             if (ClosePvReserveChecked)
                             {
                                 ClosePvReserveChecked = false;
-                                _obsService.CloseProjector();
+                                _obsService.CloseObs();
                             }
                         }
                     });
