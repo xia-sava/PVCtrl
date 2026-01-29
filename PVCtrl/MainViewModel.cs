@@ -123,6 +123,7 @@ public partial class MainViewModel : ObservableObject
             IsRecording = true;
             ObsService.BringProjectorToFront();
             ShowMessage($"ファイル名「{recFilename}」で録画開始しました．");
+            StopReserveChecked = true;
         }
     }
 
