@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Newtonsoft.Json.Linq;
@@ -46,6 +47,7 @@ public sealed class ObsService : IDisposable
     private readonly OBSWebsocket _obs = new();
     private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(RetryIntervalSeconds) };
     private bool _lastProjectorState;
+    private int _pollingSuspendCount;
 
     public bool IsConnected => _obs.IsConnected;
     public bool IsProjectorOpen => FindProjectorWindow(_ => { });
@@ -64,6 +66,8 @@ public sealed class ObsService : IDisposable
 
     private void OnTimerTick()
     {
+        if (_pollingSuspendCount > 0) return;
+
         Connect();
 
         var isProjectorOpen = IsProjectorOpen;
@@ -134,8 +138,10 @@ public sealed class ObsService : IDisposable
     /// <summary>
     /// OBS を起動し、プロジェクターを表示
     /// </summary>
-    public async void StartObsWithProjector()
+    public async Task StartObsWithProjectorAsync()
     {
+        using var _ = SuspendPolling();
+
         var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
         if (process == null)
             LaunchObs();
@@ -304,6 +310,24 @@ public sealed class ObsService : IDisposable
     private void OnDisconnected(object? sender, ObsDisconnectionInfo info)
     {
         StatusChanged?.Invoke(false);
+    }
+
+    public IDisposable SuspendPolling()
+    {
+        Interlocked.Increment(ref _pollingSuspendCount);
+        return new PollingSuspender(this);
+    }
+
+    private class PollingSuspender(ObsService service) : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            Interlocked.Decrement(ref service._pollingSuspendCount);
+        }
     }
 
     public void Dispose()

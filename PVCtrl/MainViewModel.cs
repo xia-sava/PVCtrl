@@ -1,6 +1,7 @@
 using System;
 using System.Media;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -150,12 +151,12 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ToggleMonitor()
+    private async Task ToggleMonitorAsync()
     {
         if (IsProjectorOpen)
             _obsService.CloseObs();
         else
-            _obsService.StartObsWithProjector();
+            await _obsService.StartObsWithProjectorAsync();
     }
 
     [RelayCommand]
