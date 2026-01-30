@@ -66,17 +66,17 @@ public sealed class ObsService : IDisposable
     {
         Connect();
 
-        var currentState = IsProjectorOpen;
-        if (_lastProjectorState != currentState)
+        var isProjectorOpen = IsProjectorOpen;
+        if (_lastProjectorState != isProjectorOpen)
         {
-            _lastProjectorState = currentState;
-            ProjectorStatusChanged?.Invoke(currentState);
+            _lastProjectorState = isProjectorOpen;
+            ProjectorStatusChanged?.Invoke(isProjectorOpen);
+        }
 
-            // プロジェクターが閉じられたら OBS も閉じる
-            if (!currentState)
-            {
-                CloseObs();
-            }
+        // プロジェクター非表示、OBS 接続中 → OBS を閉じる
+        if (!isProjectorOpen && _obs.IsConnected)
+        {
+            CloseObs();
         }
     }
 
