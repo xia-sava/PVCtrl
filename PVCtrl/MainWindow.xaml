@@ -41,6 +41,9 @@
                                     <DataTrigger Binding="{Binding IsRecording}" Value="True">
                                         <Setter Property="Foreground" Value="Gray" />
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="False">
+                                        <Setter Property="Foreground" Value="Gray" />
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>●</TextBlock>
@@ -52,6 +55,9 @@
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsRecording}" Value="True">
                                         <Setter Property="Foreground" Value="Blue" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="False">
+                                        <Setter Property="Foreground" Value="Gray" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

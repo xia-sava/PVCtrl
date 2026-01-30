@@ -56,7 +56,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool isAwake;
 
-    [ObservableProperty] private bool isObsConnected;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ToggleRecordCommand))]
+    private bool isObsConnected;
 
     [ObservableProperty] private bool isObsAudioOn;
 
@@ -98,7 +100,7 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanToggleRecord))]
     private void ToggleRecord()
     {
         if (IsRecording)
@@ -125,6 +127,8 @@ public partial class MainViewModel : ObservableObject
             StopReserveChecked = true;
         }
     }
+
+    private bool CanToggleRecord() => IsObsConnected;
 
     [RelayCommand]
     private void Min25() => SetRecordAndAlarmMinutes(25, 1);
