@@ -52,11 +52,13 @@ public sealed class ObsService : IDisposable
 
     public event Action<bool>? StatusChanged;
     public event Action<bool>? ProjectorStatusChanged;
+    public event Action<bool>? RecordingStatusChanged;
 
     public ObsService()
     {
         _obs.Connected += OnConnected;
         _obs.Disconnected += OnDisconnected;
+        _obs.RecordStateChanged += OnRecordStateChanged;
         _retryTimer.Tick += (_, _) => OnTimerTick();
     }
 
@@ -279,6 +281,24 @@ public sealed class ObsService : IDisposable
     private void OnConnected(object? sender, EventArgs e)
     {
         StatusChanged?.Invoke(true);
+
+        // 接続時に現在の録画状態を取得
+        try
+        {
+            var status = _obs.GetRecordStatus();
+            RecordingStatusChanged?.Invoke(status.IsRecording);
+        }
+        catch
+        {
+            // 取得失敗は無視
+        }
+    }
+
+    private void OnRecordStateChanged(object? sender, OBSWebsocketDotNet.Types.Events.RecordStateChangedEventArgs e)
+    {
+        var isRecording = e.OutputState.State is OBSWebsocketDotNet.Types.OutputState.OBS_WEBSOCKET_OUTPUT_STARTED
+            or OBSWebsocketDotNet.Types.OutputState.OBS_WEBSOCKET_OUTPUT_RESUMED;
+        RecordingStatusChanged?.Invoke(isRecording);
     }
 
     private void OnDisconnected(object? sender, ObsDisconnectionInfo info)
@@ -291,6 +311,7 @@ public sealed class ObsService : IDisposable
         _retryTimer.Stop();
         _obs.Connected -= OnConnected;
         _obs.Disconnected -= OnDisconnected;
+        _obs.RecordStateChanged -= OnRecordStateChanged;
         Disconnect();
     }
 }

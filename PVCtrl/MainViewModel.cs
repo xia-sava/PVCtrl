@@ -300,6 +300,17 @@ public partial class MainViewModel : ObservableObject
         {
             Application.Current.Dispatcher.Invoke(() => IsProjectorOpen = open);
         };
+        _obsService.RecordingStatusChanged += recording =>
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsRecording = recording;
+                if (!recording)
+                {
+                    StopReserveChecked = false;
+                }
+            });
+        };
         _obsService.Start();
     }
 
