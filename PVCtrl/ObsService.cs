@@ -45,9 +45,10 @@ public sealed class ObsService : IDisposable
 
     private readonly OBSWebsocket _obs = new();
     private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(RetryIntervalSeconds) };
+    private bool _lastProjectorState;
 
     public bool IsConnected => _obs.IsConnected;
-    public bool IsProjectorOpen { get; private set; }
+    public bool IsProjectorOpen => FindProjectorWindow(_ => { });
 
     public event Action<bool>? StatusChanged;
     public event Action<bool>? ProjectorStatusChanged;
@@ -62,9 +63,18 @@ public sealed class ObsService : IDisposable
     private void OnTimerTick()
     {
         Connect();
-        if (IsProjectorOpen && !FindProjectorWindow(_ => { }))
+
+        var currentState = IsProjectorOpen;
+        if (_lastProjectorState != currentState)
         {
-            CloseObs();
+            _lastProjectorState = currentState;
+            ProjectorStatusChanged?.Invoke(currentState);
+
+            // プロジェクターが閉じられたら OBS も閉じる
+            if (!currentState)
+            {
+                CloseObs();
+            }
         }
     }
 
@@ -133,7 +143,7 @@ public sealed class ObsService : IDisposable
 
         OpenSourceProjector();
         await RetryUntilAsync(BringProjectorToFront);
-        IsProjectorOpen = true;
+        _lastProjectorState = true;
         ProjectorStatusChanged?.Invoke(true);
     }
 
@@ -151,7 +161,7 @@ public sealed class ObsService : IDisposable
     public void CloseProjector()
     {
         FindProjectorWindow(hWnd => PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero));
-        IsProjectorOpen = false;
+        _lastProjectorState = false;
         ProjectorStatusChanged?.Invoke(false);
     }
 
@@ -247,7 +257,7 @@ public sealed class ObsService : IDisposable
             ["support_url"] = "https://github.com/xia-sava/PVCtrl",
             ["force"] = true
         });
-        IsProjectorOpen = false;
+        _lastProjectorState = false;
         ProjectorStatusChanged?.Invoke(false);
     }
 
