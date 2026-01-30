@@ -45,7 +45,7 @@ public sealed class ObsService : IDisposable
     ];
 
     private readonly OBSWebsocket _obs = new();
-    private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(RetryIntervalSeconds) };
+    private IDisposable? _tickSubscription;
     private bool _lastProjectorState;
     private int _pollingSuspendCount;
 
@@ -61,7 +61,6 @@ public sealed class ObsService : IDisposable
         _obs.Connected += OnConnected;
         _obs.Disconnected += OnDisconnected;
         _obs.RecordStateChanged += OnRecordStateChanged;
-        _retryTimer.Tick += (_, _) => OnTimerTick();
     }
 
     private void OnTimerTick()
@@ -87,7 +86,7 @@ public sealed class ObsService : IDisposable
     public void Start()
     {
         Connect();
-        _retryTimer.Start();
+        _tickSubscription = TickService.Subscribe(RetryIntervalSeconds, OnTimerTick);
     }
 
     public void Connect()
@@ -332,7 +331,7 @@ public sealed class ObsService : IDisposable
 
     public void Dispose()
     {
-        _retryTimer.Stop();
+        _tickSubscription?.Dispose();
         _obs.Connected -= OnConnected;
         _obs.Disconnected -= OnDisconnected;
         _obs.RecordStateChanged -= OnRecordStateChanged;

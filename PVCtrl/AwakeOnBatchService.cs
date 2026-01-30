@@ -4,14 +4,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Windows.Automation;
-using System.Windows.Threading;
 
 namespace PVCtrl;
 
 [SupportedOSPlatform("windows6.1")]
 public sealed class AwakeOnBatchService : IDisposable
 {
-    private const int pollInterval = 10;
+    private const int PollIntervalSeconds = 10;
 
     [DllImport("kernel32.dll")]
     private static extern uint SetThreadExecutionState(uint esFlags);
@@ -20,20 +19,19 @@ public sealed class AwakeOnBatchService : IDisposable
     private const uint ES_SYSTEM_REQUIRED = 0x00000001;
     private const uint ES_DISPLAY_REQUIRED = 0x00000002;
 
-    private readonly DispatcherTimer _pollTimer = new() { Interval = TimeSpan.FromSeconds(pollInterval) };
+    private IDisposable? _tickSubscription;
 
     public event Action<bool> StatusChanged = _ => { }; // スリープ抑止状態変化通知
     private bool _lastAwakeState;
 
     public void Start()
     {
-        _pollTimer.Tick += (_, _) => UpdateAwakeState();
-        _pollTimer.Start();
+        _tickSubscription = TickService.Subscribe(PollIntervalSeconds, UpdateAwakeState);
     }
 
     public void Dispose()
     {
-        _pollTimer.Stop();
+        _tickSubscription?.Dispose();
         SetThreadExecutionState(ES_CONTINUOUS);
     }
 

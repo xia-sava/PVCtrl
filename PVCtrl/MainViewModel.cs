@@ -282,6 +282,8 @@ public partial class MainViewModel : ObservableObject
             window!.WindowState = WindowState.Maximized;
         }
 
+        TickService.Start();
+
         _awakeService.StatusChanged += awakeState => IsAwake = awakeState;
         _awakeService.Start();
 
@@ -325,6 +327,7 @@ public partial class MainViewModel : ObservableObject
 
         _awakeService.Dispose();
         _obsService.Dispose();
+        TickService.Stop();
 
         // ウィンドウの位置・サイズを保存
         var window = Application.Current.MainWindow;

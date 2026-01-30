@@ -2,14 +2,13 @@ using System;
 using System.Media;
 using System.Runtime.Versioning;
 using PVCtrl.Properties;
-using Timer = System.Timers.Timer;
 
 namespace PVCtrl;
 
 [SupportedOSPlatform("windows6.1")]
 static class RecTimerService
 {
-    private static Timer? _recTimer;
+    private static IDisposable? _tickSubscription;
     private static Action<bool>? _recStopHandler;
 
     public static void StartRecTimer(int minutes, int alarmMinute, Action<DateTime> elapsedHandler,
@@ -18,8 +17,7 @@ static class RecTimerService
         var alarmed = alarmMinute == 0;
         var stopTime = DateTime.Now.AddMinutes(minutes);
         _recStopHandler = stopHandler;
-        _recTimer = new Timer(1000);
-        _recTimer.Elapsed += (_, _) =>
+        _tickSubscription = TickService.Subscribe(1, () =>
         {
             elapsedHandler(stopTime);
             if (stopTime.AddMinutes(-alarmMinute) < DateTime.Now)
@@ -35,14 +33,14 @@ static class RecTimerService
             {
                 StopRecTimer(true);
             }
-        };
-        _recTimer.Start();
+        });
     }
 
     public static void StopRecTimer(bool recStop)
     {
-        if (_recTimer?.Enabled != true) return;
-        _recTimer.Stop();
+        if (_tickSubscription == null) return;
+        _tickSubscription.Dispose();
+        _tickSubscription = null;
         _recStopHandler?.Invoke(recStop);
     }
 }
