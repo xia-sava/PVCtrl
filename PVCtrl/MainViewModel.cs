@@ -1,11 +1,9 @@
 using System;
 using System.Media;
 using System.Runtime.Versioning;
-using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PVCtrl.Properties;
 
 namespace PVCtrl;
 
@@ -269,26 +267,18 @@ public partial class MainViewModel : ObservableObject
     public void OnWindowLoaded()
     {
         // ウィンドウの位置・サイズを復元
-        try
+        var window = Application.Current.MainWindow;
+        var settings = AppSettings.Load();
+        if (settings is { Width: > 0, Height: > 0 })
         {
-            var window = Application.Current.MainWindow;
-            var bounds = Settings.Default.Bounds;
-            if (bounds is { Width: > 0, Height: > 0 })
-            {
-                window!.Left = bounds.Left;
-                window.Top = bounds.Top;
-                window.Width = bounds.Width;
-                window.Height = bounds.Height;
-            }
-
-            if (Settings.Default.WindowState == System.Windows.Forms.FormWindowState.Maximized)
-            {
-                window!.WindowState = WindowState.Maximized;
-            }
+            window!.Left = settings.Left;
+            window.Top = settings.Top;
+            window.Width = settings.Width;
+            window.Height = settings.Height;
         }
-        catch
+        if (settings.IsMaximized)
         {
-            // 設定読み込みエラーは無視
+            window!.WindowState = WindowState.Maximized;
         }
 
         _awakeService.StatusChanged += awakeState => IsAwake = awakeState;
@@ -325,24 +315,24 @@ public partial class MainViewModel : ObservableObject
         _obsService.Dispose();
 
         // ウィンドウの位置・サイズを保存
-        try
+        var window = Application.Current.MainWindow;
+        var settings = new AppSettings { IsMaximized = window?.WindowState == WindowState.Maximized };
+        if (window?.WindowState == WindowState.Normal)
         {
-            var window = Application.Current.MainWindow;
-            if (window?.WindowState == WindowState.Normal)
-            {
-                Settings.Default.Bounds = new System.Drawing.Rectangle(
-                    (int)window.Left, (int)window.Top, (int)window.Width, (int)window.Height);
-            }
-
-            Settings.Default.WindowState = window?.WindowState == WindowState.Maximized
-                ? System.Windows.Forms.FormWindowState.Maximized
-                : System.Windows.Forms.FormWindowState.Normal;
-
-            Settings.Default.Save();
+            settings.Left = (int)window.Left;
+            settings.Top = (int)window.Top;
+            settings.Width = (int)window.Width;
+            settings.Height = (int)window.Height;
         }
-        catch
+        else
         {
-            // 設定保存エラーは無視
+            // 最大化時は前回の Normal サイズを維持するため読み込み直す
+            var prev = AppSettings.Load();
+            settings.Left = prev.Left;
+            settings.Top = prev.Top;
+            settings.Width = prev.Width;
+            settings.Height = prev.Height;
         }
+        settings.Save();
     }
 }
