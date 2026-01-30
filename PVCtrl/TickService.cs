@@ -4,6 +4,11 @@ using System.Windows.Threading;
 
 namespace PVCtrl;
 
+public interface ITickSubscription : IDisposable
+{
+    IDisposable Suspend();
+}
+
 public static class TickService
 {
     private static readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
@@ -22,6 +27,8 @@ public static class TickService
         // イテレート中に変更される可能性があるのでコピー
         foreach (var sub in _subscribers.ToArray())
         {
+            if (sub.IsSuspended) continue;
+
             sub.Counter++;
             if (sub.Counter >= sub.IntervalSeconds)
             {
@@ -31,21 +38,30 @@ public static class TickService
         }
     }
 
-    public static IDisposable Subscribe(int intervalSeconds, Action callback)
+    public static ITickSubscription Subscribe(int intervalSeconds, Action callback)
     {
         var subscriber = new Subscriber(intervalSeconds, callback);
         _subscribers.Add(subscriber);
-        return new Unsubscriber(() => _subscribers.Remove(subscriber));
+        return subscriber;
     }
 
-    private class Subscriber(int intervalSeconds, Action callback)
+    private class Subscriber(int intervalSeconds, Action callback) : ITickSubscription
     {
         public int IntervalSeconds => intervalSeconds;
         public Action Callback => callback;
         public int Counter { get; set; }
+        public bool IsSuspended { get; set; }
+
+        public IDisposable Suspend()
+        {
+            IsSuspended = true;
+            return new Resumer(() => IsSuspended = false);
+        }
+
+        public void Dispose() => _subscribers.Remove(this);
     }
 
-    private class Unsubscriber(Action unsubscribe) : IDisposable
+    private class Resumer(Action resume) : IDisposable
     {
         private bool _disposed;
 
@@ -53,7 +69,7 @@ public static class TickService
         {
             if (_disposed) return;
             _disposed = true;
-            unsubscribe();
+            resume();
         }
     }
 }
