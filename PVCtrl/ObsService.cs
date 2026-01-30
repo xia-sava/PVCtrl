@@ -37,7 +37,6 @@ public sealed class ObsService : IDisposable
 
     private const string DefaultUrl = "ws://localhost:4455";
     private const string DefaultPassword = "";
-    private const int RetryIntervalSeconds = 10;
 
     private static readonly string[] ObsExePaths =
     [
@@ -45,7 +44,8 @@ public sealed class ObsService : IDisposable
     ];
 
     private readonly OBSWebsocket _obs = new();
-    private ITickSubscription? _tickSubscription;
+    private ITickSubscription? _connectSubscription;
+    private ITickSubscription? _projectorSubscription;
     private bool _lastProjectorState;
 
     public bool IsConnected => _obs.IsConnected;
@@ -62,10 +62,13 @@ public sealed class ObsService : IDisposable
         _obs.RecordStateChanged += OnRecordStateChanged;
     }
 
-    private void OnTimerTick()
+    private void OnConnectTick()
     {
         Connect();
+    }
 
+    private void OnProjectorTick()
+    {
         var isProjectorOpen = IsProjectorOpen;
         if (_lastProjectorState != isProjectorOpen)
         {
@@ -83,7 +86,8 @@ public sealed class ObsService : IDisposable
     public void Start()
     {
         Connect();
-        _tickSubscription = TickService.Subscribe(RetryIntervalSeconds, OnTimerTick);
+        _connectSubscription = TickService.Subscribe(1, OnConnectTick);
+        _projectorSubscription = TickService.Subscribe(3, OnProjectorTick);
     }
 
     public void Connect()
@@ -136,7 +140,7 @@ public sealed class ObsService : IDisposable
     /// </summary>
     public async Task StartObsWithProjectorAsync()
     {
-        using var _ = _tickSubscription?.Suspend();
+        using var _ = _projectorSubscription?.Suspend();
 
         var process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == "obs64");
         if (process == null)
@@ -310,7 +314,8 @@ public sealed class ObsService : IDisposable
 
     public void Dispose()
     {
-        _tickSubscription?.Dispose();
+        _connectSubscription?.Dispose();
+        _projectorSubscription?.Dispose();
         _obs.Connected -= OnConnected;
         _obs.Disconnected -= OnDisconnected;
         _obs.RecordStateChanged -= OnRecordStateChanged;
