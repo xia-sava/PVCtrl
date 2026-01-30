@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using Newtonsoft.Json.Linq;
 using OBSWebsocketDotNet;
 using OBSWebsocketDotNet.Communication;
+using static OBSWebsocketDotNet.Types.OutputState;
 
 namespace PVCtrl;
 
@@ -302,8 +303,9 @@ public sealed class ObsService : IDisposable
 
     private void OnRecordStateChanged(object? sender, OBSWebsocketDotNet.Types.Events.RecordStateChangedEventArgs e)
     {
-        var isRecording = e.OutputState.State is OBSWebsocketDotNet.Types.OutputState.OBS_WEBSOCKET_OUTPUT_STARTED
-            or OBSWebsocketDotNet.Types.OutputState.OBS_WEBSOCKET_OUTPUT_RESUMED;
+        var isRecording = e.OutputState.State is OBS_WEBSOCKET_OUTPUT_STARTING
+            or OBS_WEBSOCKET_OUTPUT_STARTED
+            or OBS_WEBSOCKET_OUTPUT_RESUMED;
         RecordingStatusChanged?.Invoke(isRecording);
     }
 
