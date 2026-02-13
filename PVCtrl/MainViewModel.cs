@@ -62,6 +62,8 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool isObsAudioOn;
 
+    [ObservableProperty] private bool isAudioSignalPresent;
+
     [ObservableProperty] private bool isProjectorOpen;
 
     [ObservableProperty] private bool isRecording;
@@ -317,6 +319,10 @@ public partial class MainViewModel : ObservableObject
                     StopReserveChecked = false;
                 }
             });
+        };
+        _obsService.AudioSignalChanged += present =>
+        {
+            Application.Current.Dispatcher.Invoke(() => IsAudioSignalPresent = present);
         };
         _obsService.Start();
     }
