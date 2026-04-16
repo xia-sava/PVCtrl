@@ -124,6 +124,22 @@ public sealed class ObsService : IDisposable
     }
 
     /// <summary>
+    /// 録画出力ディレクトリを取得
+    /// </summary>
+    public string? GetRecordDirectory()
+    {
+        if (!_obs.IsConnected) return null;
+        try
+        {
+            return _obs.GetRecordDirectory();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
     /// 録画ファイル名を設定して録画開始
     /// </summary>
     public void StartRecord(string filename)

@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Media;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
@@ -122,6 +124,20 @@ public partial class MainViewModel : ObservableObject
                 Filename = recFilename;
             }
 
+            if (RecordingFileExists(recFilename))
+            {
+                var result = MessageBox.Show(
+                    $"ファイル「{recFilename}」は既に存在します．上書きしますか？",
+                    "確認",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                if (result != MessageBoxResult.Yes)
+                {
+                    OnPropertyChanged(nameof(IsRecording));
+                    return;
+                }
+            }
+
             _obsService.StartRecord(recFilename);
             IsRecording = true;
             ObsService.BringProjectorToFront();
@@ -231,6 +247,20 @@ public partial class MainViewModel : ObservableObject
             RemainedTimeLabel = "00:00:00";
             WindowTitle = "ObsCtrl";
             ShowMessage("録画停止予約を解除しました．");
+        }
+    }
+
+    private bool RecordingFileExists(string filename)
+    {
+        var dir = _obsService.GetRecordDirectory();
+        if (dir == null) return false;
+        try
+        {
+            return Directory.EnumerateFiles(dir, $"{filename}.*").Any();
+        }
+        catch
+        {
+            return false;
         }
     }
 
