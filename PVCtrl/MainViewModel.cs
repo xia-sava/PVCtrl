@@ -256,7 +256,11 @@ public partial class MainViewModel : ObservableObject
         if (dir == null) return false;
         try
         {
-            return Directory.EnumerateFiles(dir, $"{filename}.*").Any();
+            return Directory.EnumerateFiles(dir, $"{filename}.*")
+                .Any(p => string.Equals(
+                    Path.GetFileNameWithoutExtension(p),
+                    filename,
+                    StringComparison.OrdinalIgnoreCase));
         }
         catch
         {
